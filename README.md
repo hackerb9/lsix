@@ -96,7 +96,7 @@ processed as if the user had cd'd to that directory.
 * ImageMagick's `montage -label` command doesn't handle long filenames
 nicely. Perhaps there's a way to wrap text?
 
-* If you run `ls foo.avi`, you're asking for trouble.
+* If you run `lsix foo.avi`, you're asking for trouble.
 
 
 ## Future Issues
