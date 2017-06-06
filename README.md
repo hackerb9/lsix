@@ -29,7 +29,7 @@ that GIF stores some frames as only the pixels that differ from the
 previous frame.
 ![Example 2 of lsix usage](/README.md.d/example2.png "GIFs get expanded")
 
-### Reverse Video works
+### Terminal background color is detected
 
 You may have noticed that PNGs and SVG files have correct alpha
 channel for the terminal background. That is because lsix uses
