@@ -57,17 +57,24 @@ fi
 
 
 if [[ $# == 0 ]]; then
-    # No command line args? Use a sorted list of image files in CWD
-   shopt -s nullglob nocaseglob
+    # No command line args? Use a sorted list of image files in CWD.
+   shopt -s nullglob nocaseglob nocasematch
    set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
    [[ $# != 0 ]] || exit
    mapfile -t < <(printf "%s\n" "$@" | sort) 
+
+   # Only show first frame of animated GIFs if filename not specified.
+   for x in ${!MAPFILE[@]}; do
+       if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
+	   MAPFILE[$x]+="[0]"
+       fi
+   done
    set - "${MAPFILE[@]}"
 fi
 
-imoptions="-tile 7x1 -label %f"	# Each montage image is one row, 7 columns
-imoptions+="-background $background -fill $foreground" # Same colors as terminal
-imoptions+="-auto-orient"	# Properly rotate JPEGs from cameras
+imoptions="-tile 7x1 -label %f"	# Each montage image is 1 row, 7 columns
+imoptions+=" -background $background -fill $foreground" # Use terminal's colors
+imoptions+=" -auto-orient"	# Properly rotate JPEGs from cameras
 
 if [[ $# -le 21 ]]; then 
     # Only a few pictures to show, do it in one (multipage) chunk.
