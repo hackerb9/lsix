@@ -109,13 +109,20 @@ nicely. Perhaps there's a way to wrap text?
   per row. (I've e-mailed a proposed extension to the protocol to
   Thomas E. Dickey, maintainer of xterm.)
 
-* libsixel is an excellent project for writing programs that can
-  output optimized Sixel graphics commands. Because I have a lot of
-  respect for the project, I feel I should explain why `lsix` does not
-  use libsixel.
+* The Sixel standard also lacks a way to query the number of
+  color registers available. I used the extensions from `xterm` to do
+  so, but I do not know how widely implemented they are. If a terminal
+  does not respond, `lsix` presumes you're on an original vt340 and
+  uses only 16 color registers. (Sorry, 4-gray vt330 users! Time to
+  upgrade. ;-) )
 
-  * (a) I wanted lsix to work everywhere easily. By relying only on
-    bash and imagemagick, most people already have everything they need.
+* [libsixel](https://github.com/saitoha/libsixel) is an excellent
+  project for writing programs that can output optimized Sixel
+  graphics commands. Because I have a lot of respect for the project,
+  I feel I should explain why `lsix` does not use libsixel.
+
+  * (a) I wanted lsix to work everywhere easily. Bash and imagemagick
+    are ubiquitous, so a shell script is a natural solution.
 
   * (b) I wanted `lsix` to be simple enough that it could be easily
     customized and extended by other people. (Including myself.)
@@ -129,5 +136,4 @@ nicely. Perhaps there's a way to wrap text?
   * (d) While libsixel is optimized and would surely be faster than
     ImageMagick, it's overkill. For a simple directory listing, this
     is plenty fast enough.
-
 
