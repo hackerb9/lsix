@@ -1,0 +1,149 @@
+#!/bin/bash
+
+# lsix: like ls, but for images.
+# Shows thumbnails of images with titles directly in terminal. 
+
+# Requirements: just ImageMagick (and a Sixel terminal, of course)
+
+# Version 1.2
+# B9 June 2017
+
+# See end of file for USAGE.
+
+
+numcolors=16   # Number of colors in the palette, if TERM is not xterm
+background=white # Default montage background, if autodetection fails.
+foreground=black # Default text color, also overruled by autodetection.
+
+cleanup() {
+    echo $'\e\\'		# Escape sequence to stop SIXEL
+    exit 0
+}
+trap cleanup SIGINT SIGHUP SIGABRT
+
+# TERMINAL COLOR AUTODETECTION.
+# Find out how many color registers the terminal has
+IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;1;0S'
+[[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
+
+# Increase colors, if needed
+if [[ $numcolors -lt 256 ]]; then
+    # Attempt to set the number of colors to 256.
+    # This will work for xterm, but fail on a real vt340.
+    IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;3;256S'
+    [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
+fi
+
+# Query the terminal background and foreground colors.
+IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]11;?\e\\'
+if [[ ${REPLY[1]} =~ ^rgb ]]; then
+    # Return value format: $'\e]11;rgb:ffff/0000/ffff\e\\'.
+    # ImageMagick wants colors formatted as #ffff0000ffff.
+    background='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
+
+    IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]10;?\e\\'
+    if [[ ${REPLY[1]} =~ ^rgb ]]; then
+	foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
+
+	# Check if colors are reversed.
+	IFS=";?$"  read -a REPLY -s -t 0.1 -d "y" -p $'\e[?5$p'
+	if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
+	    temp=$foreground
+	    foreground=$background
+	    background=$temp
+	fi
+    fi
+fi
+
+
+if [[ $# == 0 ]]; then
+    # No command line args? Use a sorted list of image files in CWD
+   shopt -s nullglob nocaseglob
+   set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
+   [[ $# != 0 ]] || exit
+   mapfile -t < <(printf "%s\n" "$@" | sort) 
+   set - "${MAPFILE[@]}"
+fi
+
+imoptions="-tile 7x1 -label %f"	# Each montage image is one row, 7 columns
+imoptions+="-background $background -fill $foreground" # Same colors as terminal
+imoptions+="-auto-orient"	# Properly rotate JPEGs from cameras
+
+if [[ $# -le 21 ]]; then 
+    # Only a few pictures to show, do it in one (multipage) chunk.
+    montage $imoptions "$@" gif:- \
+	| convert - -colors $numcolors sixel:-
+else
+    # Lots of pictures, so show them a row at a time instead
+    # of taking a long time to make one huge montage.
+    while [ $# -gt 0 ]; do
+	while [ $# -gt 0 -a  ${#onerow[@]} -lt 7 ]; do
+	    len=${#onerow[@]}
+	    onerow[$len]="$1"
+	    shift
+	done
+	montage $imoptions "${onerow[@]}" gif:-  \
+	    | convert - -colors $numcolors sixel:-
+	onerow=()
+    done
+fi    
+    
+# Send an escape sequence and wait for a response from the terminal
+# so that the program won't quit until images have finished transferring.
+read -s -t 60 -d "c" -p $'\e[c'
+
+
+######################################################################
+# NOTES:
+
+# Usage: lsix [ FILES ... ] 
+
+# * FILES can be any image file that ImageMagick can handle.
+#
+# * If no FILES are specified the most common file extensions are tried.
+#   (For now, lsix only searches the current working directory.)
+#
+# * Non-bitmap graphics often work fine (.svg, .eps, .pdf, .xcf).
+#
+# * Because this uses escape sequences, it works seamlessly through ssh.
+#
+# * If your terminal supports reporting the background and foreground
+#   color, lsix will use those for the montage background and text fill.
+#
+# * If your terminal supports changing the number of color registers
+#   to improve the picture quality, lsix will do so.
+
+# * Only software needed is ImageMagick (e.g., apt-get install imagemagick).
+
+# Your terminal must support SIXEL graphics. E.g.,
+#
+#     xterm -ti vt340
+
+# * To make vt340 be the default xterm type, set this in .Xresources:
+#
+#     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
+#     xterm*decTerminalID	:	vt340
+
+# * Be cautious using lsix on videos (lsix *.avi) as ImageMagick will
+#   try to make a montage of every single frame and likely exhaust
+#   your memory and/or your patience.
+
+# BUGS
+
+# * Directories are not handled nicely. (Just ignored).
+# * Showing all the frames from a GIF should be optional.
+# * This file is getting awfully long for a one line kludge. :-)
+
+
+# LICENSE INFORMATION
+# (AKA, You know your kludge has gotten out of hand when...)
+
+# Dual license:
+# * You have all the freedoms permitted to you under the
+#   GNU GPL >=3. (See the included LICENSE file).
+
+# * Additionally, this program can be used under the terms of whatever
+#   license 'xterm' is using (now or in the future). This is primarily
+#   so that, if the xterm maintainer (currently Thomas E. Dickey) so
+#   wishes, this program may be included with xterm as a Sixel test.
+#   However, anyone who wishes to take advantage of this is free to do so.
