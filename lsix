@@ -142,7 +142,7 @@ read -s -t 60 -d "c" -p $'\e[c'
 
 # BUGS
 
-# * Directories are not handled nicely. (Just ignored).
+# * Directories are not handled nicely.
 # * ImageMagick's Montage doesn't handle long filenames nicely.
 # * This file is getting awfully long for a one line kludge. :-)
 
