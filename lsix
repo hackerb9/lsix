@@ -112,6 +112,11 @@ read -s -t 60 -d "c" -p $'\e[c'
 #
 # * Non-bitmap graphics often work fine (.svg, .eps, .pdf, .xcf).
 #
+# * Files containing multiple images (e.g., animated GIFs) will show
+#   all the images if the filename is specified at the command line.
+#   Only the first frame will be shown if "lsix" is called with no
+#   arguments.
+#
 # * Because this uses escape sequences, it works seamlessly through ssh.
 #
 # * If your terminal supports reporting the background and foreground
@@ -138,7 +143,7 @@ read -s -t 60 -d "c" -p $'\e[c'
 # BUGS
 
 # * Directories are not handled nicely. (Just ignored).
-# * Showing all the frames from a GIF should be optional.
+# * Maybe showing all the frames from a GIF should be optional.
 # * This file is getting awfully long for a one line kludge. :-)
 
 
