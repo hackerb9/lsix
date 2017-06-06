@@ -24,9 +24,9 @@ use a wildcard (`*.pdf` in the example below),.
 ### Expanding GIFs 
 If you specify a GIF (or actually any file that has multiple images in
 it) on the command line, all the frames will get expanded and shown in
-a montage. For example, `lsix nyancat.gif` shows all the frames. (Note
+a montage. For example, `lsix nyancat.gif` shows all the frames. Note
 that GIF stores some frames as only the pixels that differ from the
-previous frame.) 
+previous frame.
 ![Example 2 of lsix usage](/README.md.d/example2.png "GIFs get expanded")
 
 ### Reverse Video works
@@ -36,9 +36,9 @@ channel for the terminal background. That is because lsix uses
 terminal escape sequences to try to figure out your foreground and
 background colors. (Foreground is used for the text fill color.)
 
-In the first example below, after running lsix in a white on black
+In the first example below, after running `lsix` in a white on black
 xterm, I sent an escape sequence to swap foreground and background
-colors. When I ran lsix again, lsix detected it and changed the
+colors. When I ran it again, `lsix` detected it and changed the
 background color to white. Of course, you can pick whatever default
 colors you want (e.g., `xterm -bg blue`, in the second example below).
 
@@ -63,10 +63,10 @@ colors you want (e.g., `xterm -bg blue`, in the second example below).
 
 ## Installation
 
-Just put the `lsix` file in your path (e.g., /usr/local/bin) and run
+Just put the [`lsix`](/lsix) file in your path (e.g., /usr/local/bin) and run
 it. It's just a BASH shell script.
 
-The only prerequisite software is ImageMagicka. If you don't have it
+The only prerequisite software is ImageMagick. If you don't have it
 yet, your OS's package manager will make it easy to get. (E.g.,
 `apt-get install imagemagick`).
 
