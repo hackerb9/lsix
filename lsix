@@ -92,7 +92,9 @@ imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" 
 imoptions+=" -label %f"		# Put a label underneath each tile
 imoptions+=" -background $background -fill $foreground" # Use terminal's colors
 imoptions+=" -auto-orient"	# Properly rotate JPEGs from cameras
-imoptions+=" -shadow"		# Just for fun :-)
+if [[ $numcolors -gt 16 ]]; then
+    imoptions+=" -shadow"		# Just for fun :-)
+fi
 
 if [[ $# -le 21 ]]; then 
     # Only a few pictures to show, do it in one (multipage) chunk.

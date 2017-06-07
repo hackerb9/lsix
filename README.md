@@ -57,6 +57,9 @@ colors you want (e.g., `xterm -bg blue`, in the second example below).
 
 * Automatically detects terminal's foreground and background colors.
 
+* In terminals that support dtterm WindowOps, the number of tiles per
+  row will be adjust appropriately to the window width.
+
 * If there are many images in a directory (>21), lsix will display them
   one row at a time so you don't need to wait for the entire montage
   to be created.
@@ -86,6 +89,21 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
     xterm*decTerminalID	:	vt340
 
+## Detecting screen size requires xterm configuration 
+
+If you are using xterm, to have `lsix` automatically adjust how many
+tiles it shows based on your window size, you'll need to add the
+following to your .Xresources:
+
+    ! Allow lsix to read the terminal window size (op #14)
+    xterm*allowWindowOps      : False
+    xterm*disallowedWindowOps : 1,2,3,4,5,6,7,8,9,11,13,18,19,20,21,GetSelection,SetSelection,SetWinLines,SetXprop
+
+Xterm's configuration for this is rather recondite. In order to allow
+the operation checking the window size (#14), we have to tell xterm to
+not to allow window ops, but then we explicitly list the ops
+disallowed, and it just happens that that list does not include the
+number 14. (This is very silly.)
 
 
 ## BUGS
@@ -104,10 +122,21 @@ nicely. Perhaps there's a way to wrap text?
 * The Sixel standard, at least as implemented by xterm, doesn't appear
   to have a way to query the size of the graphics screen. Reading the
   VT340 documentation, it appears your program has to already know the
-  resolution of the device you're rendering on. This is unfortunate as
-  `lsix` assumes you are on a VT340 (800x480) and can fit only 7 tiles
-  per row. (I've e-mailed a proposed extension to the protocol to
-  Thomas E. Dickey, maintainer of xterm.)
+  resolution of the device you're rendering on.
+
+  There is a way to read the window size using the dtterm WindowOps
+  extension but it is not quite the right solution and it is not
+  enabled by default in xterm. The geometry of the Sixel graphics
+  screen is not necessarily the same as the window size. (For example,
+  xterm limits the graphics geometry to 1000x1000, even though the
+  window can actually be larger.)
+
+  For now, if your terminal can handle it, `lsix` will use the dtterm
+  WindowOps to read your window size, but the chances of that working
+  are slim. For most people `lsix` will assume you are on a VT340
+  (800x480) and can fit only 6 tiles per row. (I've e-mailed a
+  proposed extension to the protocol to Thomas E. Dickey, maintainer
+  of xterm.)
 
 * The Sixel standard also lacks a way to query the number of
   color registers available. I used the extensions from `xterm` to do
