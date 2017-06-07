@@ -11,9 +11,14 @@
 # See end of file for USAGE.
 
 
-numcolors=16   # Number of colors in the palette, if TERM is not xterm
-background=white # Default montage background, if autodetection fails.
-foreground=black # Default text color, also overruled by autodetection.
+# The following defaults may be overridden if autodetection succeeds.
+numcolors=16     # Default number of colors in the palette.
+background=white # Default montage background.
+foreground=black # Default text color.
+width=800	 # Default width of screen in pixels.
+tilesize=120	 # Default width and height of each tile in the montage.
+tilewidth=$tilesize
+tileheight=$tilesize
 
 cleanup() {
     echo $'\e\\'		# Escape sequence to stop SIXEL
@@ -23,28 +28,26 @@ trap cleanup SIGINT SIGHUP SIGABRT
 
 # TERMINAL COLOR AUTODETECTION.
 # Find out how many color registers the terminal has
-IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;1;0S'
+IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;1;0S' >&2
 [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 
 # Increase colors, if needed
 if [[ $numcolors -lt 256 ]]; then
     # Attempt to set the number of colors to 256.
     # This will work for xterm, but fail on a real vt340.
-    IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;3;256S'
+    IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;3;256S' >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 fi
 
 # Query the terminal background and foreground colors.
-IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]11;?\e\\'
+IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]11;?\e\\' >&2
 if [[ ${REPLY[1]} =~ ^rgb ]]; then
     # Return value format: $'\e]11;rgb:ffff/0000/ffff\e\\'.
     # ImageMagick wants colors formatted as #ffff0000ffff.
     background='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-
-    IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]10;?\e\\'
+    IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]10;?\e\\' >&2
     if [[ ${REPLY[1]} =~ ^rgb ]]; then
 	foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-
 	# Check for "Reverse Video".
 	IFS=";?$"  read -a REPLY -s -t 0.1 -d "y" -p $'\e[?5$p'
 	if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
@@ -54,6 +57,18 @@ if [[ ${REPLY[1]} =~ ^rgb ]]; then
 	fi
     fi
 fi
+
+# Try dtterm WindowOps to find out the window size.
+IFS=";" read -a REPLY -s -t 0.1 -d "t" -p $'\e[14t' >&2
+if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
+    width=${REPLY[2]}
+fi
+
+# Space between tiles is about 0.5% of total screen width
+tilexspace=$((width/200))
+tileyspace=$((tilexspace/2))
+# Figure out how many tiles we can fit per row.
+numtiles=$((width/(tilewidth + 2*tilexspace)))
 
 
 if [[ $# == 0 ]]; then
@@ -72,9 +87,12 @@ if [[ $# == 0 ]]; then
    set - "${MAPFILE[@]}"
 fi
 
-imoptions="-tile 7x1 -label %f"	# Each montage image is 1 row, 7 columns
+imoptions="-tile ${numtiles}x1" # Each montage image is 1 row, $numtiles columns
+imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
+imoptions+=" -label %f"		# Put a label underneath each tile
 imoptions+=" -background $background -fill $foreground" # Use terminal's colors
 imoptions+=" -auto-orient"	# Properly rotate JPEGs from cameras
+imoptions+=" -shadow"		# Just for fun :-)
 
 if [[ $# -le 21 ]]; then 
     # Only a few pictures to show, do it in one (multipage) chunk.
@@ -84,7 +102,7 @@ else
     # Lots of pictures, so show them a row at a time instead
     # of taking a long time to make one huge montage.
     while [ $# -gt 0 ]; do
-	while [ $# -gt 0 -a  ${#onerow[@]} -lt 7 ]; do
+	while [ $# -gt 0 -a  ${#onerow[@]} -lt $numtiles ]; do
 	    len=${#onerow[@]}
 	    onerow[$len]="$1"
 	    shift
@@ -97,7 +115,7 @@ fi
     
 # Send an escape sequence and wait for a response from the terminal
 # so that the program won't quit until images have finished transferring.
-read -s -t 60 -d "c" -p $'\e[c'
+read -s -t 60 -d "c" -p $'\e[c' >&2
 
 
 ######################################################################
