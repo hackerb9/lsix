@@ -20,6 +20,11 @@ width=800	 # Default width of screen in pixels.
 tilesize=120	 # Width and height of each tile in the montage.
 tilewidth=$tilesize
 tileheight=$tilesize
+if [[ ${BASH_VERSINFO[0]} -le 3 ]]; then
+    timeout=1
+else
+    timeout=0.1
+fi
 
 cleanup() {
     echo -n $'\e\\'		# Escape sequence to stop SIXEL.
@@ -33,28 +38,28 @@ stty -echo			# Hush-a Mandara Ni Pari
 
 # TERMINAL COLOR AUTODETECTION.
 # Find out how many color registers the terminal has
-IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;1;0S' >&2
+IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
 [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 
 # Increase colors, if needed
 if [[ $numcolors -lt 256 ]]; then
     # Attempt to set the number of colors to 256.
     # This will work for xterm, but fail on a real vt340.
-    IFS=";"  read -a REPLY -s -t 0.1 -d "S" -p $'\e[?1;3;256S' >&2
+    IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;3;256S' >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 fi
 
 # Query the terminal background and foreground colors.
-IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]11;?\e\\' >&2
+IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]11;?\e\\' >&2
 if [[ ${REPLY[1]} =~ ^rgb ]]; then
     # Return value format: $'\e]11;rgb:ffff/0000/ffff\e\\'.
     # ImageMagick wants colors formatted as #ffff0000ffff.
     background='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-    IFS=";:/"  read -a REPLY -r -s -t 0.1 -d "\\" -p $'\e]10;?\e\\' >&2
+    IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]10;?\e\\' >&2
     if [[ ${REPLY[1]} =~ ^rgb ]]; then
 	foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
 	# Check for "Reverse Video".
-	IFS=";?$"  read -a REPLY -s -t 0.1 -d "y" -p $'\e[?5$p'
+	IFS=";?$"  read -a REPLY -s -t ${timeout} -d "y" -p $'\e[?5$p'
 	if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
 	    temp=$foreground
 	    foreground=$background
@@ -64,7 +69,7 @@ if [[ ${REPLY[1]} =~ ^rgb ]]; then
 fi
 
 # Try dtterm WindowOps to find out the window size.
-IFS=";" read -a REPLY -s -t 0.1 -d "t" -p $'\e[14t' >&2
+IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
 if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
     width=${REPLY[2]}
 fi
