@@ -20,10 +20,11 @@ width=800	 # Default width of screen in pixels.
 tilesize=120	 # Width and height of each tile in the montage.
 tilewidth=$tilesize
 tileheight=$tilesize
-if [[ ${BASH_VERSINFO[0]} -le 3 ]]; then
-    timeout=1
+
+if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
+    timeout=0.1			# How long to wait for terminal to respond.
 else
-    timeout=0.1
+    timeout=1			# Bash 3's `read` could not handle decimals.
 fi
 
 cleanup() {
