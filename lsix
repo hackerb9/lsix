@@ -16,7 +16,8 @@ numcolors=16     # Default number of colors in the palette.
 background=white # Default montage background.
 foreground=black # Default text color.
 width=800	 # Default width of screen in pixels.
-tilesize=120	 # Default width and height of each tile in the montage.
+
+tilesize=120	 # Width and height of each tile in the montage.
 tilewidth=$tilesize
 tileheight=$tilesize
 
@@ -156,6 +157,13 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 #     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
 #     xterm*decTerminalID	:	vt340
 
+# * Xterm does not support reporting the screen size in pixels unless
+#   you add this to your .Xresources:
+#
+#     ! Allow xterm to read the terminal window size (op #14)
+#     xterm*allowWindowOps      : False
+#     xterm*disallowedWindowOps : 1,2,3,4,5,6,7,8,9,11,13,18,19,20,21,GetSelection,SetSelection,SetWinLines,SetXprop
+
 # * Be cautious using lsix on videos (lsix *.avi) as ImageMagick will
 #   try to make a montage of every single frame and likely exhaust
 #   your memory and/or your patience.
@@ -164,8 +172,9 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 
 # * Directories are not handled nicely.
 # * ImageMagick's Montage doesn't handle long filenames nicely.
+# * Some transparent images (many .eps files) presume a white background
+#   and will not show up if your terminal's background is black. 
 # * This file is getting awfully long for a one line kludge. :-)
-
 
 # LICENSE INFORMATION
 # (AKA, You know your kludge has gotten out of hand when...)
