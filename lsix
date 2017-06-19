@@ -22,9 +22,11 @@ tileheight=$tilesize
 
 cleanup() {
     echo $'\e\\'		# Escape sequence to stop SIXEL
+    stty echo
     exit 0
 }
 trap cleanup SIGINT SIGHUP SIGABRT
+stty -echo
 
 # TERMINAL COLOR AUTODETECTION.
 # Find out how many color registers the terminal has
@@ -118,6 +120,7 @@ fi
 # Send an escape sequence and wait for a response from the terminal
 # so that the program won't quit until images have finished transferring.
 read -s -t 60 -d "c" -p $'\e[c' >&2
+stty echo
 
 
 ######################################################################
