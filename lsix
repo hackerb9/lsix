@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.4
-# B9 June 2017
+# Version 1.5
+# B9 January 2018
 
 # See end of file for USAGE.
 
@@ -74,6 +74,10 @@ IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
 if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
     width=${REPLY[2]}
 fi
+
+# BUG WORKAROUND: XTerm cannot show images wider than 1000px.
+# Remove this hack once XTerm gets fixed. Last checked: XTerm(327)
+if [[ $width -ge 1000 ]]; then  width=1000; fi
 
 # Space between tiles is about 0.5% of total screen width
 tilexspace=$((width/200))
