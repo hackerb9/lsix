@@ -1,5 +1,5 @@
 # lsix
-Like "ls", but for images. Shows thumbnails in terminal using sixel
+Like "ls", but for images. Shows thumbnails in terminal using ![sixel](https://en.wikipedia.org/wiki/Sixel)
 graphics.
 
 > Yet another small command line UNIX tool you never dreamt needing,
