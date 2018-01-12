@@ -1,5 +1,9 @@
 # lsix
-Like "ls", but for images. Shows thumbnails in terminal using sixel graphics.
+Like "ls", but for images. Shows thumbnails in terminal using sixel
+graphics.
+
+> Yet another small command line UNIX tool you never dreamt needing,
+> but, now found, an indispensible companion.
 
 ## Usage
 
@@ -106,7 +110,27 @@ disallowed, and it just happens that that list does not include the
 number 14. (This is very silly.)
 
 
+## CONFIGURATION
+
+Because `lsix` is currently designed to be very simple, there are no
+command line flags, no configuration files, no knobs to twiddle, or
+frobs to frobnosticate. However, since the script is so simple, if you
+want to make a change, it's pretty easy to do just by editing the
+file. Everything is nicely commented with the most common default
+variables at the top.
+
+## Feedback welcome!
+
+I welcome feedback and if you use lsix or have suggestions for how it
+can be improved, please go ahead and send me your thoughtsa to me
+@hackerb9 via GitHub.
+
+
 ## BUGS
+
+* Screen width is currently limited to 1000px due to a misfeature in
+  xterm which caused it to silently show nothing. This limitation will
+  be removed once xterm can handle images greater than 1000x1000.
 
 * Directories specified on the command line should perhaps be
 processed as if the user had cd'd to that directory.
