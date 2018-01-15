@@ -2,8 +2,9 @@
 Like "ls", but for images. Shows thumbnails in terminal using ![sixel](https://en.wikipedia.org/wiki/Sixel)
 graphics.
 
-> Yet another small command line UNIX tool you never dreamt needing,
-> but, now found, an indispensible companion.
+> ![Thumbnail of lsix](/README.md.d/thumb.png "lsix")
+> Yet another small command line UNIX tool I never dreamt needing;
+> now found, an indispensible companion.
 
 ## Usage
 
@@ -62,7 +63,7 @@ colors you want (e.g., `xterm -bg blue`, in the second example below).
 * Automatically detects terminal's foreground and background colors.
 
 * In terminals that support dtterm WindowOps, the number of tiles per
-  row will be adjust appropriately to the window width.
+  row will adjust appropriately to the window width.
 
 * If there are many images in a directory (>21), lsix will display them
   one row at a time so you don't need to wait for the entire montage
@@ -122,7 +123,7 @@ variables at the top.
 ## Feedback welcome!
 
 I welcome feedback and if you use lsix or have suggestions for how it
-can be improved, please go ahead and send me your thoughtsa to me
+can be improved, please go ahead and send your thoughts to me
 @hackerb9 via GitHub.
 
 
