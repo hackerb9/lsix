@@ -123,7 +123,7 @@ variables at the top.
 
 I welcome feedback. If you use lsix and like it or have suggestions
 for how it can be improved, please go ahead and send your thoughts to
-me [!@hackerb9](https://github.com/hackerb9/lsix/issues/new) via
+me ![@hackerb9](https://github.com/hackerb9/lsix/issues/new) via
 GitHub.
 
 
