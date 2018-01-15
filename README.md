@@ -110,7 +110,7 @@ disallowed, and it just happens that that list does not include the
 number 14. (This is very silly.)
 
 
-## CONFIGURATION
+## Configuration
 
 Because `lsix` is currently designed to be very simple, there are no
 command line flags, no configuration files, no knobs to twiddle, or
@@ -119,14 +119,15 @@ want to make a change, it's pretty easy to do just by editing the
 file. Everything is nicely commented with the most common default
 variables at the top.
 
-## Feedback welcome!
+## Contact the author
 
-I welcome feedback. If you use lsix or have suggestions for how it
-can be improved, please go ahead and send your thoughts to me
-@hackerb9 via GitHub.
+I welcome feedback. If you use lsix and like it or have suggestions
+for how it can be improved, please go ahead and send your thoughts to
+me [!@hackerb9](https://github.com/hackerb9/lsix/issues/new) via
+GitHub.
 
 
-## BUGS
+## Bugs
 
 * Screen width is currently limited to 1000px due to a misfeature in
   xterm which caused it to silently show nothing. This limitation will
