@@ -1,6 +1,6 @@
-# lsix
 <img align="right" src="README.md.d/thumb.png">
 
+# lsix
 Like "ls", but for images. Shows thumbnails in terminal using ![sixel](https://en.wikipedia.org/wiki/Sixel)
 graphics.
 
