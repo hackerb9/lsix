@@ -1,10 +1,8 @@
 # lsix
+<img align="right"  src="README.md.d/thumb.png">
 Like "ls", but for images. Shows thumbnails in terminal using ![sixel](https://en.wikipedia.org/wiki/Sixel)
 graphics.
 
-> ![Thumbnail of lsix](/README.md.d/thumb.png "lsix")
-> Yet another small command line UNIX tool I never dreamt needing;
-> now found, an indispensible companion.
 
 ## Usage
 
