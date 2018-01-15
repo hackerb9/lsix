@@ -5,7 +5,7 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.5
+# Version 1.5.1
 # B9 January 2018
 
 # See end of file for USAGE.
@@ -21,10 +21,16 @@ tilesize=120	 # Width and height of each tile in the montage.
 tilewidth=$tilesize
 tileheight=$tilesize
 
+# Sanity check and compatibility
 if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
     timeout=0.1			# How long to wait for terminal to respond.
 else
     timeout=1			# Bash 3's `read` could not handle decimals.
+fi
+
+if ! command -v montage >/dev/null; then
+    echo "Please install ImageMagick" >&2
+    exit 1
 fi
 
 cleanup() {
