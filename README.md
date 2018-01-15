@@ -20,7 +20,7 @@ You can also specify filenames and, of course, use shell wild cards
 Because lsix uses ImageMagick pretty much any image format will be
 supported. However, some may be slow to render (like PDF), so lsix
 doesn't show them unless you ask specifically. If you want to force a
-listing of certain type of image simply specify the filenames or
+listing of a certain type of image simply specify the filenames or
 use a wildcard (`*.pdf` in the example below),.
 
 ![Example 1 of lsix usage](/README.md.d/example1.png "Most basic usage")
@@ -121,7 +121,7 @@ variables at the top.
 
 ## Feedback welcome!
 
-I welcome feedback and if you use lsix or have suggestions for how it
+I welcome feedback. If you use lsix or have suggestions for how it
 can be improved, please go ahead and send your thoughts to me
 @hackerb9 via GitHub.
 
