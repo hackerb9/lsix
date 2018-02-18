@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.5.1
-# B9 January 2018
+# Version 1.6
+# B9 February 2018
 
 # See end of file for USAGE.
 
@@ -39,6 +39,121 @@ cleanup() {
     exit 0
 }
 trap cleanup SIGINT SIGHUP SIGABRT EXIT
+
+
+
+# shortlabel() and nibble() exist simply to make filenames shorter.
+# They replace common prefixes and suffixes with ellipses.
+#
+# This is needed since Montage just splats long filenames on top of
+# each other. However, it is perilous, as we are dealing with
+# arbitrary input in a shell script. Dealing with strange characters,
+# unicode, and spaces is not something a shell script should have to
+# do. "
+
+previousname=""
+shortlabel() {
+    # Take a list of filenames and shorten them if they look like the
+    # previous filenames by removing prefixes and suffixes.
+    # Output as 'montage' arguments.
+    # E.g.: -label "foo" "qwertyfooyuiop.png" -label "bar" qwertybaryuiop.png"
+
+    # every arg in "$@" is a filename like "nm-stage02-connecting-tile-001.png"
+    for arg; do
+        echo -n "-label '"
+        # Remove matching {pre,suf}fix and print result
+        echo -n $(nibble "$previousname" "$arg")
+        echo -n "' "
+        echo "$arg"             # Filename for montage to show
+        previousname="$arg"
+    done
+}
+
+previ=0
+prevj=0
+nibble() {
+    # Given two strings a & b (previous and current filename),
+    # return the second string after removing identical prefixes and suffixes.
+
+    # Prefix replacement is only done if at least five characters are saved.
+    # (Room for ellipses and also prevents adding ellipses for extensions).
+    # Extensions (e.g., ".jpg") are removed without ellipses.
+    
+    # Example: "qwertyasdffred.png" "qwertyasdfjuki.png" -> "...juki.png"
+    # Example: "qwertyfredabc.png" "qwertyjukiabc.png" -> "...juki..."
+    # Example: "abcfred.png" "abcjuki.png" -> "abcjuki.png"  
+    # Example: "qwerty1.png" "qwerty.png" -> "qwerty.png"  
+    a="$1"
+    b="$2"
+
+    # Short circuit: don't bother nibbling if the filenames are short enough.
+    # On my setup, that's about 15 characters.
+    if [[ ${#b} -le 15 ]]; then
+        echo "$b"
+        return
+    fi
+
+    # Find common prefix; at end of loop, first $i character match
+    for (( i=0; i<${#a}; i++)); do
+        if [[ ${a:i:1} != ${b:i:1} ]]; then
+            break
+        fi
+    done
+#    echo "Debug: i: $i, $previ" >&2
+
+    # If tail of prefix match are digits, treat them specially, so we
+    # get more context. (E.g., 237, 238, 239, 240; not 7, 8, 9, 40)
+    if [[ ${b:i:1} =~ [0-9] ]]; then
+        for t in once twice; do
+            if [[ ${b:i-1:1} =~ [0-9] ]]; then
+                i=$((i-1))
+            fi
+        done
+    fi
+
+    # Shorten if match is at least 5 and the match hasn't gotten shorter
+    if [[ $i -ge 5  &&  $i -ge $previ ]]; then
+        label="...${b:i}"
+        previ=$i
+    else
+        label="$b"
+        previ=0
+    fi
+
+    # At this point, $label is $b with any prefix removed and ellipses added.
+    # Now find common suffix; at end of loop, last $j characters match
+    for (( j=1; j<=${#a}; j++)); do
+        if [[ ${a: -j:1} != ${label: -j:1} ]]; then
+            break
+        fi
+    done
+    j=$((j-1))
+#    echo "Debug j: $j, $prevj" >&2
+
+    # Shorten if match is at least 5 and the match hasn't gotten shorter
+    if [[ $j -ge 5  &&  $j -ge $prevj ]]; then
+        label="${label:0: -j}..."
+        prevj=$j
+    elif [[ ${label: -j:1} == "." ]]; then
+        # ellide filename extensions, but don't show ellipsis
+        label="${label:0: -j}"
+        prevj=$j
+    else
+        # label does not change.
+        prevj=0
+    fi
+
+    # After removing prefix and suffix is filename still too long?
+    if [[ ${#label} -gt 15 ]]; then
+        # Okay, throw in a gratuitous newline. 
+        midpoint=$(( ${#label} / 2 ))
+        label=${label:0:midpoint}$"\n"${label:midpoint}
+    fi
+
+    # Return the unique part of $b
+    echo "$label"
+}
+
 
 # Don't show escape sequences the terminal doesn't understand.
 stty -echo			# Hush-a Mandara Ni Pari
@@ -119,18 +234,18 @@ fi
 
 if [[ $# -le 21 ]]; then 
     # Only a few pictures to show, do it in one (multipage) chunk.
-    montage $imoptions "$@" gif:- \
+    montage $imoptions $(shortlabel "$@") gif:- \
 	| convert - -colors $numcolors sixel:-
 else
     # Lots of pictures, so show them a row at a time instead
     # of taking a long time to make one huge montage.
     while [ $# -gt 0 ]; do
-	while [ $# -gt 0 -a  ${#onerow[@]} -lt $numtiles ]; do
+	while [ $# -gt 0  -a  ${#onerow[@]} -lt $numtiles ]; do
 	    len=${#onerow[@]}
 	    onerow[$len]="$1"
 	    shift
 	done
-	montage $imoptions "${onerow[@]}" gif:-  \
+	montage $imoptions $(shortlabel "${onerow[@]}") gif:-  \
 	    | convert - -colors $numcolors sixel:-
 	onerow=()
     done
