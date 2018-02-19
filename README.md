@@ -134,10 +134,16 @@ GitHub.
   be removed once xterm can handle images greater than 1000x1000.
 
 * Directories specified on the command line should perhaps be
-processed as if the user had cd'd to that directory.
+  processed as if the user had cd'd to that directory.
 
 * ImageMagick's `montage -label` command doesn't handle long filenames
-nicely. Perhaps there's a way to wrap text?
+  nicely. Perhaps there's a way to wrap text?
+
+* Filenames that begin with "@" are special to ImageMagick and it'll
+  freak out if you don't prepend a directory. (`lsix ./@foo.png`)
+
+* Specifying the empty string `""` as a filename makes ImageMagick hang.
+  (This appears to be an ImageMagick bug / misfeature). 
 
 * If you run `lsix foo.avi`, you're asking for trouble.
 
