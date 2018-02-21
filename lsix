@@ -24,7 +24,7 @@ tileheight=$tilesize
 
 # If you get questionmarks for Unicode filenames, try using a different font.
 # You can list fonts available using `convert -list font`.
-fontfamily=Droid-Sans-Fallback		# Great Asian font coverage
+#fontfamily=Droid-Sans-Fallback		# Great Asian font coverage
 #fontfamily=Dejavu-Sans			# Wide coverage, comes with GNU/Linux
 #fontfamily=Mincho			# Wide coverage, comes with MS Windows
 
@@ -145,10 +145,8 @@ main() {
     fi
 
     # See top of this file to change fontfamily and fontsize.
-    if [[ "$fontfamily" ]]; then
-	imoptions+=" -font '$fontfamily' "
-    fi
-    imoptions+=" -pointsize $fontsize"
+    [[ "$fontfamily" ]]  &&  imoptions+=" -font $fontfamily "
+    [[ "$fontsize" ]] &&     imoptions+=" -pointsize $fontsize "
 
     if [[ $# -le 21 ]]; then 
 	# Only a few pictures to show, do it in one (multipage) chunk.
