@@ -68,6 +68,17 @@ colors you want (e.g., `xterm -bg blue`, in the second example below).
   one row at a time so you don't need to wait for the entire montage
   to be created.
 
+* If your filenames are too long, lsix will wrap the text before
+  passing it into ImageMagick's `montage`. (Without lsix, `montage` just
+  jumbles long filenames on top of one another.)
+
+* You can easily change things like the width of each tile in the
+  montage, the font family, and point size by editing simple variables
+  at the top of the file. *(Tip: try `convert -list font` to see what
+  fonts you have on your machine.)*
+
+* Unicode filenames work fine, as long as your font has the glyphs.
+
 ## Installation
 
 Just put the [`lsix`](/lsix) file in your path (e.g., /usr/local/bin) and run
@@ -136,14 +147,16 @@ GitHub.
 * Directories specified on the command line should perhaps be
   processed as if the user had cd'd to that directory.
 
-* ImageMagick's `montage -label` command doesn't handle long filenames
-  nicely. Perhaps there's a way to wrap text?
-
 * Filenames that begin with "@" are special to ImageMagick and it'll
   freak out if you don't prepend a directory. (`lsix ./@foo.png`)
+  (This is a bug in ImageMagick, not lsix.)
 
 * Specifying the empty string `""` as a filename makes ImageMagick hang.
   (This appears to be an ImageMagick bug / misfeature). 
+
+* Long filenames are wrapped, but not intelligently. Would it
+  complicate this script too much to make it prefer to wrap on whites
+  space, dashes, underscores, and periods? Maybe.
 
 * If you run `lsix foo.avi`, you're asking for trouble.
 
