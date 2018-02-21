@@ -40,102 +40,151 @@ cleanup() {
 }
 trap cleanup SIGINT SIGHUP SIGABRT EXIT
 
-# Don't show escape sequences the terminal doesn't understand.
-stty -echo			# Hush-a Mandara Ni Pari
+autodetect() {
+    # Various terminal automatic configuration routines.
 
-# TERMINAL COLOR AUTODETECTION.
-# Find out how many color registers the terminal has
-IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
-[[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
+    # Don't show escape sequences the terminal doesn't understand.
+    stty -echo			# Hush-a Mandara Ni Pari
 
-# Increase colors, if needed
-if [[ $numcolors -lt 256 ]]; then
-    # Attempt to set the number of colors to 256.
-    # This will work for xterm, but fail on a real vt340.
-    IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;3;256S' >&2
+    # TERMINAL COLOR AUTODETECTION.
+    # Find out how many color registers the terminal has
+    IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
-fi
 
-# Query the terminal background and foreground colors.
-IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]11;?\e\\' >&2
-if [[ ${REPLY[1]} =~ ^rgb ]]; then
-    # Return value format: $'\e]11;rgb:ffff/0000/ffff\e\\'.
-    # ImageMagick wants colors formatted as #ffff0000ffff.
-    background='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-    IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]10;?\e\\' >&2
+    # Increase colors, if needed
+    if [[ $numcolors -lt 256 ]]; then
+	# Attempt to set the number of colors to 256.
+	# This will work for xterm, but fail on a real vt340.
+	IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;3;256S' >&2
+	[[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
+    fi
+
+    # Query the terminal background and foreground colors.
+    IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]11;?\e\\' >&2
     if [[ ${REPLY[1]} =~ ^rgb ]]; then
-	foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-	# Check for "Reverse Video".
-	IFS=";?$"  read -a REPLY -s -t ${timeout} -d "y" -p $'\e[?5$p'
-	if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
-	    temp=$foreground
-	    foreground=$background
-	    background=$temp
+	# Return value format: $'\e]11;rgb:ffff/0000/ffff\e\\'.
+	# ImageMagick wants colors formatted as #ffff0000ffff.
+	background='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
+	IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]10;?\e\\' >&2
+	if [[ ${REPLY[1]} =~ ^rgb ]]; then
+	    foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
+	    # Check for "Reverse Video".
+	    IFS=";?$"  read -a REPLY -s -t ${timeout} -d "y" -p $'\e[?5$p'
+	    if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
+		temp=$foreground
+		foreground=$background
+		background=$temp
+	    fi
 	fi
     fi
-fi
 
-# Try dtterm WindowOps to find out the window size.
-IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
-if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
-    width=${REPLY[2]}
-fi
+    # Try dtterm WindowOps to find out the window size.
+    IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
+    if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
+	width=${REPLY[2]}
+	echo "Detected width is $width" >&2
+    fi
 
-# BUG WORKAROUND: XTerm cannot show images wider than 1000px.
-# Remove this hack once XTerm gets fixed. Last checked: XTerm(327)
-if [[ $width -ge 1000 ]]; then  width=1000; fi
+    # BUG WORKAROUND: XTerm cannot show images wider than 1000px.
+    # Remove this hack once XTerm gets fixed. Last checked: XTerm(327)
+    if [[ $width -ge 1000 ]]; then  width=1000; fi
 
-# Space between tiles is about 0.5% of total screen width
-tilexspace=$((width/200))
-tileyspace=$((tilexspace/2))
-# Figure out how many tiles we can fit per row.
-numtiles=$((width/(tilewidth + 2*tilexspace)))
+    # Space between tiles is about 0.5% of total screen width
+    tilexspace=$((width/200))
+    tileyspace=$((tilexspace/2))
+    # Figure out how many tiles we can fit per row.
+    numtiles=$((width/(tilewidth + 2*tilexspace)))
+}
 
 
-if [[ $# == 0 ]]; then
-    # No command line args? Use a sorted list of image files in CWD.
-   shopt -s nullglob nocaseglob nocasematch
-   set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
-   [[ $# != 0 ]] || exit
-   mapfile -t < <(printf "%s\n" "$@" | sort) 
+main() {
+    # Discover and setup the terminal 
+    autodetect
 
-   # Only show first frame of animated GIFs if filename not specified.
-   for x in ${!MAPFILE[@]}; do
-       if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
-	   MAPFILE[$x]+="[0]"
-       fi
-   done
-   set - "${MAPFILE[@]}"
-fi
+    if [[ $# == 0 ]]; then
+	# No command line args? Use a sorted list of image files in CWD.
+	shopt -s nullglob nocaseglob nocasematch
+	set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
+	[[ $# != 0 ]] || exit
+	mapfile -t < <(printf "%s\n" "$@" | sort) 
 
-imoptions="-tile ${numtiles}x1" # Each montage image is 1 row, $numtiles columns
-imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
-imoptions+=" -label %f"		# Put a label underneath each tile
-imoptions+=" -background $background -fill $foreground" # Use terminal's colors
-imoptions+=" -auto-orient"	# Properly rotate JPEGs from cameras
-if [[ $numcolors -gt 16 ]]; then
-    imoptions+=" -shadow"		# Just for fun :-)
-fi
-
-if [[ $# -le 21 ]]; then 
-    # Only a few pictures to show, do it in one (multipage) chunk.
-    montage $imoptions "$@" gif:- \
-	| convert - -colors $numcolors sixel:-
-else
-    # Lots of pictures, so show them a row at a time instead
-    # of taking a long time to make one huge montage.
-    while [ $# -gt 0 ]; do
-	while [ $# -gt 0 -a  ${#onerow[@]} -lt $numtiles ]; do
-	    len=${#onerow[@]}
-	    onerow[$len]="$1"
-	    shift
+	# Only show first frame of animated GIFs if filename not specified.
+	for x in ${!MAPFILE[@]}; do
+	    if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
+		MAPFILE[$x]+="[0]"
+	    fi
 	done
-	montage $imoptions "${onerow[@]}" gif:-  \
-	    | convert - -colors $numcolors sixel:-
-	onerow=()
+	set - "${MAPFILE[@]}"
+    fi
+
+    # Create an array of all filenames, interleaved with "-label filename"
+    # E.g.,  '-label "foo"'  'foo.png'   '-label "bar"'  'bar.jpg'
+    declare -a labeledfiles
+    i=0
+    for arg; do
+	labeledfiles[i++]="-label"
+	labeledfiles[i++]=$(processlabel "$arg")
+	labeledfiles[i++]="$arg"
     done
-fi    
     
+    imoptions="-tile ${numtiles}x1" # Each montage is 1 row x $numtiles columns
+    imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
+    imoptions+=" -background $background -fill $foreground" # Use terminal's colors
+    imoptions+=" -auto-orient"	# Properly rotate JPEGs from cameras
+    if [[ $numcolors -gt 16 ]]; then
+	imoptions+=" -shadow"		# Just for fun :-)
+    fi
+
+    if [[ $# -le 21 ]]; then 
+	# Only a few pictures to show, do it in one (multipage) chunk.
+	montage "${labeledfiles[@]}"  $imoptions gif:- \
+	    | convert - -colors $numcolors sixel:-
+    else
+	# Lots of pictures, so show them a row at a time instead
+	# of taking a long time to make one huge montage.
+	while [ $# -gt 0 ]; do
+	    onerow=()
+	    goal=$(($# - numtiles)) # How many tiles left after this row
+	    while [ $# -gt 0  -a  $# -gt $goal ]; do
+		len=${#onerow[@]}
+		onerow[len++]="-label"
+		onerow[len++]=$(processlabel "$1")
+		onerow[len++]="$1"
+		shift
+	    done
+	    echo montage $imoptions "${onerow[@]}"
+	    montage "${onerow[@]}"  $imoptions gif:-  \
+		| convert - -colors $numcolors sixel:-
+	done
+    fi    
+}
+    
+processlabel() {
+    # This is all about appeasing ImageMagick. 
+    # AWK is Unicode aware, but so is bash...
+    # 1. Quote percent and backslash.
+    # 2. Remove control characters
+    # 3. Split long filenames with newlines
+    echo "$1" | sed 's|%|%%|g; s|\\|\\\\|g;' | tr -d '[:cntrl:]' |
+	awk -v span=15 ' # Threshold is `span` characters
+	function halve(s,      l,h) { 	# l and h are locals
+	    # Recursively insert a newline in any portion of
+	    # string s that is longer than `span`
+
+	    l=length(s);  h=int(l/2);
+	    if (l <= span) { return s; }
+	    return halve(substr(s, 1, h))  "\n"  halve(substr(s, h+1));
+	}
+	{ 	
+	  print halve($0);
+       }
+'
+}
+
+#### 
+
+main "$@"
+
 # Send an escape sequence and wait for a response from the terminal
 # so that the program won't quit until images have finished transferring.
 read -s -t 60 -d "c" -p $'\e[c' >&2
