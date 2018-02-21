@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.5.1
-# B9 January 2018
+# Version 1.6
+# B9 February 2018
 
 # See end of file for USAGE.
 
@@ -105,7 +105,6 @@ autodetect() {
     # Figure out how many tiles we can fit per row.
     numtiles=$((width/(tilewidth + 2*tilexspace)))
 }
-
 
 main() {
     # Discover and setup the terminal 
