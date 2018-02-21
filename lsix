@@ -82,7 +82,6 @@ autodetect() {
     IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
     if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
 	width=${REPLY[2]}
-	echo "Detected width is $width" >&2
     fi
 
     # BUG WORKAROUND: XTerm cannot show images wider than 1000px.
@@ -123,7 +122,7 @@ main() {
     i=0
     for arg; do
 	labeledfiles[i++]="-label"
-	labeledfiles[i++]=$(processlabel "$arg")
+	labeledfiles[i++]="$(processlabel "$arg")"
 	labeledfiles[i++]="$arg"
     done
     
@@ -152,7 +151,6 @@ main() {
 		onerow[len++]="$1"
 		shift
 	    done
-	    echo montage $imoptions "${onerow[@]}"
 	    montage "${onerow[@]}"  $imoptions gif:-  \
 		| convert - -colors $numcolors sixel:-
 	done
@@ -160,25 +158,25 @@ main() {
 }
     
 processlabel() {
-    # This is all about appeasing ImageMagick. 
-    # AWK is Unicode aware, but so is bash...
-    # 1. Quote percent and backslash.
-    # 2. Remove control characters
-    # 3. Split long filenames with newlines
-    echo "$1" | sed 's|%|%%|g; s|\\|\\\\|g;' | tr -d '[:cntrl:]' |
-	awk -v span=15 ' # Threshold is `span` characters
+    # This routine is all about appeasing ImageMagick. 
+    # 1. Quote percent and backslash. Remove silly [0] suffix.
+    # 2. Remove control characters. 
+    # 3. If a filename is too long, remove extension (.jpg).
+    # 4. Split long filenames with newlines (recursively)
+    span=15			# filenames longer than span will be split
+    echo -n "$1" | sed 's|%|%%|g; s|\\|\\\\|g; s|\[0]$||;' |
+	tr -c '[:print:]' '?' |
+	awk -v span=$span '
 	function halve(s,      l,h) { 	# l and h are locals
-	    # Recursively insert a newline in any portion of
-	    # string s that is longer than `span`
-
 	    l=length(s);  h=int(l/2);
 	    if (l <= span) { return s; }
 	    return halve(substr(s, 1, h))  "\n"  halve(substr(s, h+1));
 	}
-	{ 	
-	  print halve($0);
-       }
-'
+	{
+	  if ( length($0) > span ) gsub(/\....$/, "");
+	  printf halve($0);
+        }
+        '
 }
 
 #### 
