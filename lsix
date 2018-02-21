@@ -17,9 +17,20 @@ background=white # Default montage background.
 foreground=black # Default text color.
 width=800	 # Default width of screen in pixels.
 
-tilesize=120	 # Width and height of each tile in the montage.
-tilewidth=$tilesize
+# Feel free to edit these defaults to your liking.
+tilesize=120	       # Width and height of each tile in the montage.
+tilewidth=$tilesize    # (or specify separately, if you prefer)
 tileheight=$tilesize
+
+# If you get questionmarks for Unicode filenames, try using a different font.
+# You can list fonts available using `convert -list font`.
+#fontfamily=Droid-Sans-Fallback		# Great Asian font coverage
+#fontfamily=Dejavu-Sans			# Wide coverage, comes with GNU/Linux
+#fontfamily=Mincho			# Wide coverage, comes with MS Windows
+
+# Default font size is based on width of each tile in montage.
+fontsize=$((tilewidth/10))
+#fontsize=16		     # (or set the point size directly, if you prefer)
 
 # Sanity check and compatibility
 if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
@@ -116,7 +127,7 @@ main() {
 	set - "${MAPFILE[@]}"
     fi
 
-    # Create an array of all filenames, interleaved with "-label filename"
+    # Create an array of all filenames, interleaved with "-label:filename"
     # E.g.,  '-label "foo"'  'foo.png'   '-label "bar"'  'bar.jpg'
     declare -a labeledfiles
     i=0
@@ -129,10 +140,16 @@ main() {
     imoptions="-tile ${numtiles}x1" # Each montage is 1 row x $numtiles columns
     imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
     imoptions+=" -background $background -fill $foreground" # Use terminal's colors
-    imoptions+=" -auto-orient"	# Properly rotate JPEGs from cameras
+    imoptions+=" -auto-orient "	# Properly rotate JPEGs from cameras
     if [[ $numcolors -gt 16 ]]; then
-	imoptions+=" -shadow"		# Just for fun :-)
+	imoptions+=" -shadow "		# Just for fun :-)
     fi
+
+    # See top of this file to change fontfamily and fontsize.
+    if [[ "$fontname" ]]; then
+	imoptions+=" -font '$fontfamily' "
+    fi
+    imoptions+=" -pointsize $fontsize"
 
     if [[ $# -le 21 ]]; then 
 	# Only a few pictures to show, do it in one (multipage) chunk.
@@ -159,13 +176,13 @@ main() {
     
 processlabel() {
     # This routine is all about appeasing ImageMagick. 
-    # 1. Quote percent and backslash. Remove silly [0] suffix.
-    # 2. Remove control characters. 
+    # 1. Remove silly [0] suffix. Quote percent backslash, and at sign.
+    # 2. Replace control characters with question marks.
     # 3. If a filename is too long, remove extension (.jpg).
     # 4. Split long filenames with newlines (recursively)
     span=15			# filenames longer than span will be split
-    echo -n "$1" | sed 's|%|%%|g; s|\\|\\\\|g; s|\[0]$||;' |
-	tr -c '[:print:]' '?' |
+    echo -n "$1" | 
+	sed 's|\[0]$||;' | tr '[:cntrl:]' '?' |
 	awk -v span=$span '
 	function halve(s,      l,h) { 	# l and h are locals
 	    l=length(s);  h=int(l/2);
@@ -173,10 +190,11 @@ processlabel() {
 	    return halve(substr(s, 1, h))  "\n"  halve(substr(s, h+1));
 	}
 	{
-	  if ( length($0) > span ) gsub(/\....$/, "");
+	  if ( length($0) > span ) gsub(/\..?.?.?.?$/, "");
 	  printf halve($0);
         }
-        '
+        ' |
+	sed 's|%|%%|g; s|\\|\\\\|g; s|@|\\@|g;'
 }
 
 #### 
