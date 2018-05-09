@@ -120,12 +120,7 @@ main() {
 	# Only show first frame of animated GIFs if filename not specified.
 	for x in ${!MAPFILE[@]}; do
 	    if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
-		# Found a GIF not specified on the command line.
 		MAPFILE[$x]+="[0]"
-	    else
-		# Not a GIF, but we can be faster and more efficient using
-		# "inline image resize" at file read time. 
-		MAPFILE[$x]+="[>${tilewidth}x>${tileheight}]"
 	    fi
 	done
 	set - "${MAPFILE[@]}"
@@ -178,14 +173,13 @@ main() {
     
 processlabel() {
     # This routine is all about appeasing ImageMagick. 
-    # 1. Remove unsightly [0], [>120x>120] suffixes.  Quote % \ @.
+    # 1. Remove silly [0] suffix. Quote percent backslash, and at sign.
     # 2. Replace control characters with question marks.
     # 3. If a filename is too long, remove extension (.jpg).
     # 4. Split long filenames with newlines (recursively)
     span=15			# filenames longer than span will be split
     echo -n "$1" | 
-	sed "s|\[0]$||; s|\[>${tilewidth}x>${tileheight}]$||; " |
-	tr '[:cntrl:]' '?' |
+	sed 's|\[0]$||;' | tr '[:cntrl:]' '?' |
 	awk -v span=$span '
 	function halve(s,      l,h) { 	# l and h are locals
 	    l=length(s);  h=int(l/2);
