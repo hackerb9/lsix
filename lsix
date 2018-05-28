@@ -126,6 +126,9 @@ main() {
 	set - "${MAPFILE[@]}"
     fi
 
+    # Resize on load: Save memory by appending this suffix to every filename.
+    resize="[${tilewidth}x${tileheight}]"
+
     # Create an array of all filenames, interleaved with "-label:filename"
     # E.g.,  '-label "foo"'  'foo.png'   '-label "bar"'  'bar.jpg'
     declare -a labeledfiles
@@ -133,7 +136,7 @@ main() {
     for arg; do
 	labeledfiles[i++]="-label"
 	labeledfiles[i++]="$(processlabel "$arg")"
-	labeledfiles[i++]="$arg"
+	labeledfiles[i++]="$arg$resize"
     done
     
     imoptions="-tile ${numtiles}x1" # Each montage is 1 row x $numtiles columns
