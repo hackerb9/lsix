@@ -183,7 +183,7 @@ processlabel() {
     span=15			# filenames longer than span will be split
     echo -n "$1" | 
 	sed 's|\[0]$||;' | tr '[:cntrl:]' '?' |
-	awk -v span=$span '
+	awk -v span=$span -v ORS=""  '
 	function halve(s,      l,h) { 	# l and h are locals
 	    l=length(s);  h=int(l/2);
 	    if (l <= span) { return s; }
@@ -191,7 +191,7 @@ processlabel() {
 	}
 	{
 	  if ( length($0) > span ) gsub(/\..?.?.?.?$/, "");
-	  printf halve($0);
+	  print halve($0);
         }
         ' |
 	sed 's|%|%%|g; s|\\|\\\\|g; s|@|\\@|g;'
