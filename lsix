@@ -142,36 +142,21 @@ main() {
     [[ "$fontfamily" ]]  &&  imoptions+=" -font $fontfamily "
     [[ "$fontsize" ]] &&     imoptions+=" -pointsize $fontsize "
 
-    if [[ $# -le 21 ]]; then 
-	# Create an array of all filenames, interleaved with "-label:filename"
-	# E.g.,  '-label "foo"'  'foo.png'   '-label "bar"'  'bar.jpg'
-	declare -a labeledfiles
-	i=0
-	for arg; do
-	    labeledfiles[i++]="-label"
-	    labeledfiles[i++]="$(processlabel "$arg")"
-	    labeledfiles[i++]="$arg$resize"
+    # Create and display montages one row at a time. 
+    while [ $# -gt 0 ]; do
+        # While we still have images to process...
+	onerow=()
+	goal=$(($# - numtiles)) # How many tiles left after this row
+	while [ $# -gt 0  -a  $# -gt $goal ]; do
+	    len=${#onerow[@]}
+	    onerow[len++]="-label"
+	    onerow[len++]=$(processlabel "$1")
+	    onerow[len++]="$1"
+	    shift
 	done
-	# Only a few pictures to show, do it in one (multipage) chunk.
-	montage "${labeledfiles[@]}"  $imoptions gif:- \
+	montage "${onerow[@]}"  $imoptions gif:-  \
 	    | convert - -colors $numcolors sixel:-
-    else
-	# Lots of pictures, so show them a row at a time instead
-	# of taking a long time to make one huge montage.
-	while [ $# -gt 0 ]; do
-	    onerow=()
-	    goal=$(($# - numtiles)) # How many tiles left after this row
-	    while [ $# -gt 0  -a  $# -gt $goal ]; do
-		len=${#onerow[@]}
-		onerow[len++]="-label"
-		onerow[len++]=$(processlabel "$1")
-		onerow[len++]="$1"
-		shift
-	    done
-	    montage "${onerow[@]}"  $imoptions gif:-  \
-		| convert - -colors $numcolors sixel:-
-	done
-    fi    
+    done
 }
     
 processlabel() {
