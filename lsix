@@ -34,7 +34,7 @@ fontsize=$((tilewidth/10))
 
 # Sanity check and compatibility
 if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
-    timeout=0.1			# How long to wait for terminal to respond.
+    timeout=0.25		# How long to wait for terminal to respond.
 else
     timeout=1			# Bash 3's `read` could not handle decimals.
 fi
