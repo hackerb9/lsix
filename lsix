@@ -99,11 +99,11 @@ autodetect() {
     # Remove this hack once XTerm gets fixed. Last checked: XTerm(327)
     if [[ $width -ge 1000 ]]; then  width=1000; fi
 
-    # Space between tiles is about 0.5% of total screen width
-    tilexspace=$((width/200))
+    # Space on either side of each tile is less than 0.5% of total screen width
+    tilexspace=$((width/201))
     tileyspace=$((tilexspace/2))
-    # Figure out how many tiles we can fit per row.
-    numtiles=$((width/(tilewidth + 2*tilexspace)))
+    # Figure out how many tiles we can fit per row. ("+ 1" is for -shadow).
+    numtiles=$((width/(tilewidth + 2*tilexspace + 1)))
 }
 
 main() {
