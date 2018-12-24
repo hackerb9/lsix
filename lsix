@@ -62,6 +62,9 @@ autodetect() {
     IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 
+    # BUG WORKAROUND: mlterm does not report number of colors.
+    if [[ $TERM =~ mlterm ]]; then numcolors=1024; fi
+
     # Increase colors, if needed
     if [[ $numcolors -lt 256 ]]; then
 	# Attempt to set the number of colors to 256.
@@ -97,7 +100,7 @@ autodetect() {
 
     # BUG WORKAROUND: XTerm cannot show images wider than 1000px.
     # Remove this hack once XTerm gets fixed. Last checked: XTerm(327)
-    if [[ $width -ge 1000 ]]; then  width=1000; fi
+    if [[ $TERM =~ xterm && $width -ge 1000 ]]; then  width=1000; fi
 
     # Space on either side of each tile is less than 0.5% of total screen width
     tilexspace=$((width/201))
