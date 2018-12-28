@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.6
-# B9 February 2018
+# Version 1.6.1
+# B9 December 2018
 
 # See end of file for USAGE.
 
@@ -118,7 +118,7 @@ main() {
 	shopt -s nullglob nocaseglob nocasematch
 	set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
 	[[ $# != 0 ]] || exit
-	mapfile -t < <(printf "%s\n" "$@" | sort) 
+	readarray -t < <(printf "%s\n" "$@" | sort) 
 
 	# Only show first frame of animated GIFs if filename not specified.
 	for x in ${!MAPFILE[@]}; do
