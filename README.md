@@ -163,24 +163,27 @@ GitHub.
 
 ## Future Issues
 
-* The Sixel standard, at least as implemented by xterm, doesn't appear
-  to have a way to query the size of the graphics screen. Reading the
-  VT340 documentation, it appears your program has to already know the
-  resolution of the device you're rendering on.
+* The Sixel standard doesn't appear to have a way to query the size of
+  the graphics screen. Reading the VT340 documentation, it appears
+  your program has to already know the resolution of the device you're
+  rendering on.
 
-  There is a way to read the window size using the dtterm WindowOps
-  extension but it is not quite the right solution and it is not
-  enabled by default in xterm. The geometry of the Sixel graphics
-  screen is not necessarily the same as the window size. (For example,
-  xterm limits the graphics geometry to 1000x1000, even though the
-  window can actually be larger.)
+  XTerm, as of version 329, has added [a control
+  sequence](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Functions-using-CSI-_-ordered-by-the-final-character_s_)
+  that solves the problem — `CSI ? Pi ; Pa ; Pv S` — but not all OSes
+  have upgraded to XTerm(329) and some terminals, such as `mlterm`,
+  haven't yet implemented it.
+
+  There is an alternate way to read the window size using the dtterm
+  WindowOps extension but it is not quite the right solution as the
+  geometry of the Sixel graphics screen is not necessarily the same as
+  the window size. (For example, xterm limits the graphics geometry to
+  1000x1000, even though the window can actually be larger.)
 
   For now, if your terminal can handle it, `lsix` will use the dtterm
   WindowOps to read your window size, but the chances of that working
   are slim. For most people `lsix` will assume you are on a VT340
-  (800x480) and can fit only 6 tiles per row. (I've e-mailed a
-  proposed extension to the protocol to Thomas E. Dickey, maintainer
-  of xterm.)
+  (800x480) and can fit only 6 tiles per row.
 
 * The Sixel standard also lacks a way to query the number of
   color registers available. I used the extensions from `xterm` to do
