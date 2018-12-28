@@ -92,10 +92,17 @@ autodetect() {
 	fi
     fi
 
-    # Try dtterm WindowOps to find out the window size.
-    IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
-    if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
+    # Send control sequence to query the sixel graphics geometry to
+    # find out how large of a sixel image can be shown.
+    IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?2;1;0S' >&2
+    if [[ ${REPLY[2]} -gt 0 ]]; then
 	width=${REPLY[2]}
+    else
+	# Nope. Fall back to dtterm WindowOps to approximate sixel geometry.
+	IFS=";" read -a REPLY -s -t ${timeout} -d "t" -p $'\e[14t' >&2
+	if [[ $? == 0  &&  ${REPLY[2]} -gt 0 ]]; then
+	    width=${REPLY[2]}
+	fi
     fi
 
     # BUG WORKAROUND: XTerm cannot show images wider than 1000px.
