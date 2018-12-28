@@ -104,11 +104,20 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
     xterm*decTerminalID	:	vt340
 
-## Detecting screen size requires xterm configuration 
+## Configuration
 
-If you are using xterm, to have `lsix` automatically adjust how many
-tiles it shows based on your window size, you'll need to add the
-following to your .Xresources:
+Because `lsix` is currently designed to be very simple, there are no
+command line flags, no configuration files, no knobs to twiddle, or
+frobs to frobnosticate. However, since the script is so simple, if you
+want to make a change, it's pretty easy to do just by editing the
+file. Everything is nicely commented with the most common default
+variables at the top.
+
+## Old versions of xterm do not detect window size 
+
+If you are using Xterm(328) or below, to have `lsix` automatically
+adjust how many tiles it shows based on your window size, you'll need
+to add the following to your .Xresources:
 
     ! Allow lsix to read the terminal window size (op #14)
     xterm*allowWindowOps      : False
@@ -120,15 +129,6 @@ not to allow window ops, but then we explicitly list the ops
 disallowed, and it just happens that that list does not include the
 number 14. (This is very silly.)
 
-
-## Configuration
-
-Because `lsix` is currently designed to be very simple, there are no
-command line flags, no configuration files, no knobs to twiddle, or
-frobs to frobnosticate. However, since the script is so simple, if you
-want to make a change, it's pretty easy to do just by editing the
-file. Everything is nicely commented with the most common default
-variables at the top.
 
 ## Contact the author
 
