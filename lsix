@@ -32,11 +32,26 @@ tileheight=$tilesize
 fontsize=$((tilewidth/10))
 #fontsize=16		     # (or set the point size directly, if you prefer)
 
-# Sanity check and compatibility
-if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
-    timeout=0.25		# How long to wait for terminal to respond.
-else
-    timeout=1			# Bash 3's `read` could not handle decimals.
+timeout=0.25		    # How long to wait for terminal to respond
+			    # to a control sequence (in seconds).
+
+# Sanity checks and compatibility
+if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
+    if bash --version | head -1 | grep -q "version 3"; then
+	cat <<-EOF >&2
+	Error: The version of Bash is extremely out of date.
+	(2007, the same year Steve Jobs announced the iPhone!)
+
+	This is almost always due to Apple's MacOS being silly.
+	Please let Apple know that their users expect current UNIX tools.
+
+	In the meantime, try using "brew install bash". 
+	EOF
+	exit 1
+    else
+	exec bash "$0" "$@"  || echo "Exec failed" >&2
+	exit 1
+    fi
 fi
 
 if ! command -v montage >/dev/null; then
