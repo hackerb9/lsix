@@ -51,6 +51,8 @@ colors you want (e.g., `xterm -bg blue`, in the second example below).
 
 ## Features
 
+* Detects if your terminal can display SIXEL graphics inline using [control sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Sixel-Graphics).
+
 * Works great over ssh. Perfect for manipulating those images on the
   web server when you can't quite remember what each one was. 
 
@@ -213,3 +215,8 @@ GitHub.
     ImageMagick, it's overkill. For a simple directory listing, this
     is plenty fast enough.
 
+## Resources
+
+  * [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html)
+  * [VT340 Programmer's Reference](https://vt100.net/docs/vt3xx-gp/chapter14.html)
+  * [ImageMagick](https://imagemagick.org/)
