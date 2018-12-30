@@ -5,7 +5,7 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.6.1
+# Version 1.6.2
 # B9 December 2018
 
 # See end of file for USAGE.
@@ -61,12 +61,27 @@ autodetect() {
     # Don't show escape sequences the terminal doesn't understand.
     stty -echo			# Hush-a Mandara Ni Pari
 
+    # IS TERMINAL SIXEL CAPABLE?
+    read -s -t 1 -d "c" -p $'\e[c' >&2 		# Send Device Attributes
+    if ! [[ $REPLY =~ ";4;" ]]; then
+	cat <<-EOF >&2
+	Error: Your terminal does not appear to support sixel graphics.
+
+	Please use a sixel capable terminal, such as xterm -ti vt340, or
+	ask your terminal manufacturer to add sixel support.
+
+	If your terminal actually does support sixel, please file a bug
+	report at http://github.com/hackerb9/lsix/issues
+	EOF
+	exit 1
+    fi
+
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
     IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 
-    # BUG WORKAROUND: mlterm does not report number of colors.
+    # Bug workaround: mlterm does not report number of colors.
     if [[ $TERM =~ mlterm ]]; then numcolors=1024; fi
 
     # Increase colors, if needed
