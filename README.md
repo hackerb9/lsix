@@ -194,6 +194,11 @@ GitHub.
   uses only 16 color registers. (Sorry, 4-gray vt330 users! Time to
   upgrade. ;-) )
 
+* mlterm (at least as of version 3.5.0) has a bug where it reverses
+  the sense of the sixel scrolling control sequence. Lsix works around
+  it for now, but we should watch out for the mlterm team to
+  eventually fix it.
+
 * [libsixel](https://github.com/saitoha/libsixel) is an excellent
   project for writing programs that can output optimized Sixel
   graphics commands. Because I have a lot of respect for the project,
