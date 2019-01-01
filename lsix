@@ -91,6 +91,14 @@ autodetect() {
 	exit 1
     fi
 
+    # ENABLE SIXEL SCROLLING so image will appear right after cursor.
+    if [[ $TERM != "mlterm" ]]; then
+	echo -ne $'\e[?80h'
+    else
+	# Except... mlterm (as of 3.5.0) has a bug that reverses the sense
+	echo -ne $'\e[?80l'
+    fi
+
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
     IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
