@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # lsix: like ls, but for images.
 # Shows thumbnails of images with titles directly in terminal. 
