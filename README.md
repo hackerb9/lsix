@@ -92,16 +92,20 @@ yet, your OS's package manager will make it easy to get. (E.g.,
 
 ## Your Terminal must support Sixel graphics
 
-I developed this on an xterm in vt340 emulation mode, but I believe
-this should work on pretty much any Sixel compatible terminal. Xterm
-does not have Sixel mode enabled by default, so you need to either run
-it like so:
+I developed this using [xterm](https://invisible-island.net/xterm/) in
+vt340 emulation mode, but I believe this should work on pretty much
+any Sixel compatible terminal. You may test your terminal by viewing a
+single image, like so:
+
+    convert  foo.jpg  -geometry 800x480  sixel:- 
+
+Note that xterm does not have Sixel mode enabled by default, so you
+need to either run it like so:
 
     xterm -ti vt340
 
 Or, make vt340 the default terminal type for xterm. Add the following
 to your `.Xresources` file and run `xrdb -merge .Xresources`.
-
 
     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
     xterm*decTerminalID	:	vt340
