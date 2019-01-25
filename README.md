@@ -93,11 +93,13 @@ yet, your OS's package manager will make it easy to get. (E.g.,
 ## Your Terminal must support Sixel graphics
 
 I developed this using [xterm](https://invisible-island.net/xterm/) in
-vt340 emulation mode, but I believe this should work on pretty much
+vt340 emulation mode, but I believe this should work on
 any Sixel compatible terminal. You may test your terminal by viewing a
 single image, like so:
 
     convert  foo.jpg  -geometry 800x480  sixel:- 
+
+### XTerm
 
 Note that xterm does not have Sixel mode enabled by default, so you
 need to either run it like so:
@@ -109,6 +111,13 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
 
     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
     xterm*decTerminalID	:	vt340
+
+### Other SIXEL compatible terminals
+
+* XTerm (tested)
+* MLterm (tested)
+* WSLtty (reported)
+* MiniTTY (Cygwin) (reported)
 
 ## Configuration
 
