@@ -80,10 +80,14 @@ autodetect() {
     read -s -t 1 -d "c" -p $'\e[c' >&2 		# Send Device Attributes
     if ! [[ $REPLY =~ ";4;" ]]; then
 	cat <<-EOF >&2
-	Error: Your terminal does not appear to support sixel graphics.
+	Error: Your terminal does not report having sixel graphics support.
 
 	Please use a sixel capable terminal, such as xterm -ti vt340, or
-	ask your terminal manufacturer to add sixel support.
+	ask your terminal manufacturer to add sixel support. 
+
+	You may test your terminal by viewing a single image, like so:
+
+	        convert  foo.jpg  -geometry 800x480  sixel:- 
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
