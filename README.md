@@ -128,23 +128,6 @@ want to make a change, it's pretty easy to do just by editing the
 file. Everything is nicely commented with the most common default
 variables at the top.
 
-## Old versions of xterm do not detect window size 
-
-If you are using Xterm(328) or below, to have `lsix` automatically
-adjust how many tiles it shows based on your window size, you'll need
-to add the following to your .Xresources:
-
-    ! Allow lsix to read the terminal window size (op #14)
-    xterm*allowWindowOps      : False
-    xterm*disallowedWindowOps : 1,2,3,4,5,6,7,8,9,11,13,18,19,20,21,GetSelection,SetSelection,SetWinLines,SetXprop
-
-Xterm's configuration for this is rather recondite. In order to allow
-the operation checking the window size (#14), we have to tell xterm to
-not to allow window ops, but then we explicitly list the ops
-disallowed, and it just happens that that list does not include the
-number 14. (This is very silly.)
-
-
 ## Contact the author
 
 I welcome feedback. If you use lsix and like it or have suggestions
@@ -174,6 +157,23 @@ GitHub.
   space, dashes, underscores, and periods? Maybe.
 
 * If you run `lsix foo.avi`, you're asking for trouble.
+
+* Old versions of xterm need configuration to detect window size.
+
+    If you are using Xterm(328) or below, to have `lsix` automatically
+    adjust how many tiles it shows based on your window size, you'll need
+    to add the following to your .Xresources:
+
+        ! Allow lsix to read the terminal window size (op #14)
+        xterm*allowWindowOps      : False
+        xterm*disallowedWindowOps : 1,2,3,4,5,6,7,8,9,11,13,18,19,20,21,GetSelection,SetSelection,SetWinLines,SetXprop
+
+    Xterm's configuration for this is rather recondite. In order to allow
+    the operation checking the window size (#14), we have to tell xterm to
+    _not_ allow window ops, but then we explicitly list the ops
+    disallowed, and it just happens that that list does not include the
+    number 14. _(This_ _is_ _very_ _silly.)_
+
 
 
 ## Future Issues
