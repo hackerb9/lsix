@@ -243,5 +243,5 @@ GitHub.
   * [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html)
   * [ImageMagick](https://imagemagick.org/)
   * [VT340 Programmer's Reference](https://vt100.net/docs/vt3xx-gp/chapter14.html)
-  * [VT420 Programming Summary](https://vt100.net/docs/vt420-uu/chapter9.html)
+  * [VT420 Programmer Reference (pdf)](https://manx-docs.org/collections/mds-199909/cd3/term/vt420rm2.pdf)
   * [DEC STD 070 Video Systems Reference Manual](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381). This tome is, I believe, the VT Bible. It covers everything in exacting detail. I referred mostly to sections 4 (escape sequences) and 9 (sixel programming).
