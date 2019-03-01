@@ -213,9 +213,15 @@ GitHub.
   upgrade. ;-) )
 
 * mlterm (at least as of version 3.5.0) has a bug where it reverses
-  the sense of the sixel scrolling control sequence. Lsix works around
-  it for now, but we should watch out for the mlterm team to
-  eventually fix it.
+  the sense of the sixel scrolling control sequence. 
+
+  Possibly this is an attempt to simulate the VT240 hardware terminal
+  which did not scroll sixels. However, that behavior is considered
+  "deviant" according to the standard. See [DEC STD
+  070](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381), chapter 9, section 12.1, Deviations.
+
+  Lsix works around it for now by detecting `TERM=mlterm`, but we should
+  watch out for the mlterm team to eventually fix it.
 
 * [libsixel](https://github.com/saitoha/libsixel) is an excellent
   project for writing programs that can output optimized Sixel
@@ -245,4 +251,5 @@ GitHub.
   * [VT340 Programmer's Reference](https://vt100.net/docs/vt3xx-gp/):
     * [Chapter 14](https://vt100.net/docs/vt3xx-gp/chapter14.html). Sixels.
     * [Chapter 16](https://vt100.net/docs/vt3xx-gp/chapter16.html#S16.3) Difference between Level 1 and Level 2 Sixel implementations.
-  * [DEC STD 070 Video Systems Reference Manual](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381). A weighty tome which covers everything in exacting detail. I referred mostly to sections 4 (escape sequences) and 9 (sixel programming).
+  * [DEC STD 070 Video Systems Reference Manual](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381).
+    A weighty tome which covers everything in exacting detail. I referred mostly to sections 4 (escape sequences) and 9 (sixel programming).
