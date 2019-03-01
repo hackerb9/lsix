@@ -188,7 +188,7 @@ GitHub.
   your program has to already know the resolution of the device you're
   rendering on.
 
-  XTerm, as of version 329, has added [a control
+  XTerm, as of version 344, has added [a control
   sequence](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Functions-using-CSI-_-ordered-by-the-final-character_s_)
   that solves the problem — `CSI ? Pi ; Pa ; Pv S` — but not all OSes
   have upgraded to XTerm(329) and some terminals, such as `mlterm`,
@@ -217,9 +217,8 @@ GitHub.
 
   Possibly this is an attempt to simulate the VT240 hardware terminal
   which did not scroll sixels. However, that behavior is considered
-  "deviant" according to the standard. See [DEC STD
-  070](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381), chapter 9, section 12.1, Deviations.
-
+  "deviant" according to the standard. (See [DEC STD
+  070](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381), chapter 9, section 12.1, Deviations.)
   Lsix works around it for now by detecting `TERM=mlterm`, but we should
   watch out for the mlterm team to eventually fix it.
 
