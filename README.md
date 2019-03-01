@@ -138,6 +138,11 @@ GitHub.
 
 ## Bugs
 
+* XTerm's reverse video mode (`xterm -rv`) is different from its
+  reverse video visual character attribute. There is a way to detect
+  the latter, but not the former. That means the background color will
+  be incorrect for folks who use the reverse video mode. (See bug #20).
+
 * Screen width is currently limited to 1000px due to a misfeature in
   xterm which caused it to silently show nothing. This limitation will
   be removed once xterm can handle images greater than 1000x1000.
@@ -236,5 +241,7 @@ GitHub.
 ## Resources
 
   * [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html)
-  * [VT340 Programmer's Reference](https://vt100.net/docs/vt3xx-gp/chapter14.html)
   * [ImageMagick](https://imagemagick.org/)
+  * [VT340 Programmer's Reference](https://vt100.net/docs/vt3xx-gp/chapter14.html)
+  * [VT420 Programming Summary](https://vt100.net/docs/vt420-uu/chapter9.html)
+  * [DEC STD 070 Video Systems Reference Manual](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381). This tome is, I believe, the VT Bible. It covers everything in exacting detail. I referred mostly to sections 4 (escape sequences) and 9 (sixel programming).
