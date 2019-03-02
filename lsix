@@ -128,7 +128,7 @@ autodetect() {
 	IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]10;?\e\\' >&2
 	if [[ ${REPLY[1]} =~ ^rgb ]]; then
 	    foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-	    # Check for "Reverse Video".
+	    # Check for "Reverse Video" (DECSCNM screen mode).
 	    IFS=";?$"  read -a REPLY -s -t ${timeout} -d "y" -p $'\e[?5$p'
 	    if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
 		temp=$foreground
