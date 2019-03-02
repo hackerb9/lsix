@@ -141,7 +141,14 @@ GitHub.
 * XTerm's reverse video mode (`xterm -rv`) is different from the
   DECSCNM reverse video screen mode. There is a way to detect the
   latter, but not the former. That means the background color will be
-  incorrect for folks who use XTerm's reverseVideo resource. (See bug #20).
+  incorrect for folks who use XTerm's reverseVideo resource. (See bug
+  #20). If you have this problem, the recommended solution is to
+  instead set the foreground and background colors explicitly. For
+  example, in your .Xresources,
+
+    ! White on black is easier on eyes of b9 (and works with nethack).
+    XTerm*vt100.foreground	:	Gray90
+    XTerm*vt100.background	:	Gray10
 
 * Screen width is currently limited to 1000px due to a misfeature in
   xterm which caused it to silently show nothing. This limitation will
