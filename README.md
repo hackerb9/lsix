@@ -138,10 +138,10 @@ GitHub.
 
 ## Bugs
 
-* XTerm's reverse video mode (`xterm -rv`) is different from its
-  reverse video visual character attribute. There is a way to detect
-  the latter, but not the former. That means the background color will
-  be incorrect for folks who use the reverse video mode. (See bug #20).
+* XTerm's reverse video mode (`xterm -rv`) is different from the
+  DECSCNM reverse video screen mode. There is a way to detect the
+  latter, but not the former. That means the background color will be
+  incorrect for folks who use XTerm's reverseVideo resource. (See bug #20).
 
 * Screen width is currently limited to 1000px due to a misfeature in
   xterm which caused it to silently show nothing. This limitation will
@@ -165,7 +165,7 @@ GitHub.
 
 * Old versions of xterm need configuration to detect window size.
 
-    If you are using Xterm(328) or below, to have `lsix` automatically
+    If you are using Xterm(343) or below, to have `lsix` automatically
     adjust how many tiles it shows based on your window size, you'll need
     to add the following to your .Xresources:
 
@@ -191,7 +191,7 @@ GitHub.
   XTerm, as of version 344, has added [a control
   sequence](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Functions-using-CSI-_-ordered-by-the-final-character_s_)
   that solves the problem — `CSI ? Pi ; Pa ; Pv S` — but not all OSes
-  have upgraded to XTerm(329) and some terminals, such as `mlterm`,
+  have upgraded to XTerm(344) and some terminals, such as `mlterm`,
   haven't yet implemented it.
 
   There is an alternate way to read the window size using the dtterm
