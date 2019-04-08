@@ -117,7 +117,7 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
 * XTerm (tested)
 * MLterm (tested)
 * WSLtty (reported)
-* MiniTTY (Cygwin) (reported)
+* mintty (Cygwin) (reported)
 
 ## Configuration
 
