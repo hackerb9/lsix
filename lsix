@@ -239,6 +239,16 @@ processlabel() {
 	sed 's|%|%%|g; s|\\|\\\\|g; s|@|\\@|g;'
 }
 
+muxwrap(){
+    if [ "${TERM%%.*}" == screen ] && [ -v STY ]; then
+        sed 's,.\{767\},&\o33\\\o33P,g;1s,^,\o33P,;$s,$,\o33\\,'
+    elif [ "${TERM%%.*}" == screen ] && [ -v TMUX ]; then
+        sed 's,\o33,&&,g;1s,^,\o33Ptmux;,;$s,$,\o33\\,'
+    else
+        sed b
+    fi
+}
+
 #### 
 
 main "$@"
