@@ -76,9 +76,16 @@ autodetect() {
     # Don't show escape sequences the terminal doesn't understand.
     stty -echo			# Hush-a Mandara Ni Pari
 
-    # IS TERMINAL SIXEL CAPABLE?
-    read -s -t 1 -d "c" -p $'\e[c' >&2 		# Send Device Attributes
-    if ! [[ $REPLY =~ ";4;" ]]; then
+    # IS TERMINAL SIXEL CAPABLE? 		# Send Device Attributes
+    IFS=";" read -a REPLY -s -t 1 -d "c" -p $'\e[c' >&2
+    for code in "${REPLY[@]}"; do  
+	if [[ $code == "4" ]]; then
+	    hassixel=yup
+	    break
+	fi
+    done
+    
+    if [[ -z "$hassixel" ]]; then
 	cat <<-EOF >&2
 	Error: Your terminal does not report having sixel graphics support.
 
