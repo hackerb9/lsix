@@ -84,7 +84,10 @@ autodetect() {
 	    break
 	fi
     done
-    
+
+    # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
+    if [[ "$TERM" == yaft* ]]; then hassixel=yeah; fi
+
     if [[ -z "$hassixel" ]]; then
 	cat <<-EOF >&2
 	Error: Your terminal does not report having sixel graphics support.
@@ -99,6 +102,12 @@ autodetect() {
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
 	EOF
+	read -s -t 1 -d "c" -p $'\e[c' >&2
+	if [[ "$REPLY" ]]; then
+	    echo
+	    cat -v <<< "(Please mention device attribute codes: ${REPLY}c)"
+	fi
+	
 	exit 1
     fi
 
