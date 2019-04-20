@@ -126,6 +126,8 @@ autodetect() {
 
     # Bug workaround: mlterm does not report number of colors.
     if [[ $TERM =~ mlterm ]]; then numcolors=1024; fi
+    # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
+    if [[ "$TERM" == yaft* ]]; then numcolors=256; fi
 
     # Increase colors, if needed
     if [[ $numcolors -lt 256 ]]; then
@@ -153,6 +155,8 @@ autodetect() {
 	    fi
 	fi
     fi
+    # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
+    if [[ "$TERM" == yaft* ]]; then background=black; foreground=white; fi
 
     # Send control sequence to query the sixel graphics geometry to
     # find out how large of a sixel image can be shown.
