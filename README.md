@@ -112,12 +112,14 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
     xterm*decTerminalID	:	vt340
 
-### Other SIXEL compatible terminals
+### SIXEL compatible terminals
 
 * XTerm (tested)
 * MLterm (tested)
+* iterm2 for MacOS (pending)
 * WSLtty (reported)
-* mintty (Cygwin) (reported)
+* MinTTY (Cygwin) (reported)
+* Yaft, Linux framebuffer terminal (tested)
 
 ## Configuration
 
