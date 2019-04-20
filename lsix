@@ -112,40 +112,40 @@ autodetect() {
     fi
 
     # ENABLE SIXEL SCROLLING so image will appear right after cursor.
-    if [[ $TERM != "mlterm" ]]; then
-	echo -ne $'\e[?80h'
+    if [[ ! -v MLTERM ]]; then
+	echo -ne $'\e[?80h' | muxwrap
     else
 	# Except... mlterm (as of 3.5.0) has a bug that reverses the sense
-	echo -ne $'\e[?80l'
+	echo -ne $'\e[?80l' | muxwrap
     fi
 
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
-    IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
+    IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p "$(muxwrap <<<$'\e[?1;1;0S')" >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 
     # Bug workaround: mlterm does not report number of colors.
-    if [[ $TERM =~ mlterm ]]; then numcolors=1024; fi
+    if [[ -v MLTERM ]]; then numcolors=1024; fi
 
     # Increase colors, if needed
     if [[ $numcolors -lt 256 ]]; then
 	# Attempt to set the number of colors to 256.
 	# This will work for xterm, but fail on a real vt340.
-	IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;3;256S' >&2
+	IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p "$(muxwrap <<<$'\e[?1;3;256S')" >&2
 	[[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
     fi
 
     # Query the terminal background and foreground colors.
-    IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]11;?\e\\' >&2
+    IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p "$(muxwrap <<<$'\e]11;?\e\\')" >&2
     if [[ ${REPLY[1]} =~ ^rgb ]]; then
 	# Return value format: $'\e]11;rgb:ffff/0000/ffff\e\\'.
 	# ImageMagick wants colors formatted as #ffff0000ffff.
 	background='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-	IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p $'\e]10;?\e\\' >&2
+	IFS=";:/"  read -a REPLY -r -s -t ${timeout} -d "\\" -p "$(muxwrap <<<$'\e]10;?\e\\')" >&2
 	if [[ ${REPLY[1]} =~ ^rgb ]]; then
 	    foreground='#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
 	    # Check for "Reverse Video" (DECSCNM screen mode).
-	    IFS=";?$"  read -a REPLY -s -t ${timeout} -d "y" -p $'\e[?5$p'
+	    IFS=";?$"  read -a REPLY -s -t ${timeout} -d "y" -p "$(muxwrap <<<$'\e[?5$p')"
 	    if [[ ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ]]; then
 		temp=$foreground
 		foreground=$background
@@ -227,7 +227,8 @@ main() {
 	    shift
 	done
 	montage "${onerow[@]}"  $imoptions gif:-  \
-	    | convert - -colors $numcolors sixel:-
+	    | convert - -colors $numcolors sixel:- \
+	    | muxwrap
     done
 }
     
@@ -253,6 +254,16 @@ processlabel() {
         }
         ' |
 	sed 's|%|%%|g; s|\\|\\\\|g; s|@|\\@|g;'
+}
+
+muxwrap(){
+    if [ "${TERM%%.*}" == screen ] && [ -v STY ]; then
+        sed 's,.\{767\},&\o33\\\o33P,g;1s,^,\o33P,;$s,$,\o33\\,'
+    elif [ "${TERM%%.*}" == screen ] && [ -v TMUX ]; then
+        sed 's,\o33,&&,g;1s,^,\o33Ptmux;,;$s,$,\o33\\,'
+    else
+        sed b
+    fi
 }
 
 #### 
