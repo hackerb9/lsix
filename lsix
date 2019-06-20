@@ -27,6 +27,7 @@ tileheight=$tilesize
 #fontfamily=Droid-Sans-Fallback		# Great Asian font coverage
 #fontfamily=Dejavu-Sans			# Wide coverage, comes with GNU/Linux
 #fontfamily=Mincho			# Wide coverage, comes with MS Windows
+fontfamily=Noto-Sans-CJK-SC-Regular
 
 # Default font size is based on width of each tile in montage.
 fontsize=$((tilewidth/10))
@@ -230,6 +231,7 @@ main() {
 	    onerow[len++]="$1"
 	    shift
 	done
+	# echo montage "${onerow[@]}"  $imoptions gif:-
 	montage "${onerow[@]}"  $imoptions gif:-  \
 	    | convert - -colors $numcolors sixel:-
     done
