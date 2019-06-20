@@ -226,7 +226,7 @@ main() {
 	while [ $# -gt 0  -a  $# -gt $goal ]; do
 	    len=${#onerow[@]}
 	    onerow[len++]="-label"
-	    onerow[len++]=$(processlabel "$1")
+	    onerow[len++]=$(processlabel "$(basename $1)")
 	    onerow[len++]="$1"
 	    shift
 	done
