@@ -111,6 +111,10 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
 
     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
     xterm*decTerminalID	:	vt340
+    
+Further, some distributions, such as Fedora, appear to not compile `xterm`
+with sixel support. In that case, try an alternate terminal, such as
+`mlterm`.
 
 ### SIXEL compatible terminals
 
@@ -120,6 +124,13 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
 * WSLtty (reported)
 * MinTTY (Cygwin) (reported)
 * Yaft, Linux framebuffer terminal (tested)
+
+### SIXEL incompatible terminals
+
+* All libvte based terminals
+  * gnome-terminal
+  * terminator
+  * lxterm
 
 ## Configuration
 
