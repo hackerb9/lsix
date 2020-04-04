@@ -182,7 +182,46 @@ autodetect() {
     numtiles=$((width/(tilewidth + 2*tilexspace + 1)))
 }
 
+declare -a FILE_LIST
+
+# filter_filename adds filename to FILE_LIST if it  is supported by imagemagick
+# adds :----[0] tag to specify first image for multiple images formats
+filter_filename_and_specify_first_image() {
+    local file="$1"
+    local number_of_frames
+    number_of_frames="$(identify -quiet -format "%n" "$file" 2> /dev/null)"
+    [ "$?" -eq 1 ] && return # Skip file if not recognized
+    if [ "$number_of_frames" -gt 1 ] ; then
+        FILE_LIST+=( ":${file}[0]" )
+    else
+        FILE_LIST+=( "$file" )
+    fi
+}
+
+# build_filelist builds the list of files to be displayed
+# It mimics the behaviour of 'ls' for directories.
+# The result is stored in the global array $FILE_LIST
+export BASH_ARGV
+build_filelist() {
+    local filename
+    local arg
+    local -a bash_argv_reversed
+    for arg in "${BASH_ARGV[@]}"; do
+        bash_argv_reversed=("$arg" "${bash_argv_reversed[@]}")
+    done
+    for arg in "${bash_argv_reversed[@]}"; do
+        if [ -f "$arg" ] ; then
+            filter_filename_and_specify_first_image "$arg"
+        elif [ -d "$arg" ] ; then
+            for filename in $(find $arg -maxdepth 1 -type f) ; do
+                filter_filename_and_specify_first_image "$filename"
+            done
+        fi
+    done
+}
+
 main() {
+
     # Discover and setup the terminal
     autodetect
 
@@ -200,6 +239,9 @@ main() {
 	    fi
 	done
 	set - "${MAPFILE[@]}"
+    else
+        build_filelist
+        set - "${FILE_LIST[@]}"
     fi
 
     # Resize on load: Save memory by appending this suffix to every filename.
@@ -317,7 +359,6 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 
 # BUGS
 
-# * Directories are not handled nicely.
 # * ImageMagick's Montage doesn't handle long filenames nicely.
 # * Some transparent images (many .eps files) presume a white background
 #   and will not show up if your terminal's background is black.
