@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # lsix: like ls, but for images.
-# Shows thumbnails of images with titles directly in terminal. 
+# Shows thumbnails of images with titles directly in terminal.
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
@@ -45,7 +45,7 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
 	This is almost always due to Apple's MacOS being silly.
 	Please let Apple know that their users expect current UNIX tools.
 
-	In the meantime, try using "brew install bash". 
+	In the meantime, try using "brew install bash".
 	EOF
 	exit 1
     else
@@ -78,7 +78,7 @@ autodetect() {
 
     # IS TERMINAL SIXEL CAPABLE? 		# Send Device Attributes
     IFS=";" read -a REPLY -s -t 1 -d "c" -p $'\e[c' >&2
-    for code in "${REPLY[@]}"; do  
+    for code in "${REPLY[@]}"; do
 	if [[ $code == "4" ]]; then
 	    hassixel=yup
 	    break
@@ -93,11 +93,11 @@ autodetect() {
 	Error: Your terminal does not report having sixel graphics support.
 
 	Please use a sixel capable terminal, such as xterm -ti vt340, or
-	ask your terminal manufacturer to add sixel support. 
+	ask your terminal manufacturer to add sixel support.
 
 	You may test your terminal by viewing a single image, like so:
 
-	        convert  foo.jpg  -geometry 800x480  sixel:- 
+	        convert  foo.jpg  -geometry 800x480  sixel:-
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
@@ -107,7 +107,7 @@ autodetect() {
 	    echo
 	    cat -v <<< "(Please mention device attribute codes: ${REPLY}c)"
 	fi
-	
+
 	exit 1
     fi
 
@@ -183,7 +183,7 @@ autodetect() {
 }
 
 main() {
-    # Discover and setup the terminal 
+    # Discover and setup the terminal
     autodetect
 
     if [[ $# == 0 ]]; then
@@ -191,7 +191,7 @@ main() {
 	shopt -s nullglob nocaseglob nocasematch
 	set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
 	[[ $# != 0 ]] || exit
-	readarray -t < <(printf "%s\n" "$@" | sort) 
+	readarray -t < <(printf "%s\n" "$@" | sort)
 
 	# Only show first frame of animated GIFs if filename not specified.
 	for x in ${!MAPFILE[@]}; do
@@ -205,7 +205,7 @@ main() {
     # Resize on load: Save memory by appending this suffix to every filename.
     resize="[${tilewidth}x${tileheight}]"
 
-    
+
     imoptions="-tile ${numtiles}x1" # Each montage is 1 row x $numtiles columns
     imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
     imoptions+=" -background $background -fill $foreground" # Use terminal's colors
@@ -218,7 +218,7 @@ main() {
     [[ "$fontfamily" ]]  &&  imoptions+=" -font $fontfamily "
     [[ "$fontsize" ]] &&     imoptions+=" -pointsize $fontsize "
 
-    # Create and display montages one row at a time. 
+    # Create and display montages one row at a time.
     while [ $# -gt 0 ]; do
         # While we still have images to process...
 	onerow=()
@@ -234,16 +234,16 @@ main() {
 	    | convert - -colors $numcolors sixel:-
     done
 }
-    
+
 processlabel() {
-    # This routine is all about appeasing ImageMagick. 
+    # This routine is all about appeasing ImageMagick.
     # 1. Remove silly [0] suffix and : prefix.
     # 2. Quote percent backslash, and at sign.
     # 3. Replace control characters with question marks.
     # 4. If a filename is too long, remove extension (.jpg).
     # 5. Split long filenames with newlines (recursively)
     span=15			# filenames longer than span will be split
-    echo -n "$1" | 
+    echo -n "$1" |
 	sed 's|^:||; s|\[0]$||;' | tr '[:cntrl:]' '?' |
 	awk -v span=$span -v ORS=""  '
 	function halve(s,      l,h) { 	# l and h are locals
@@ -259,7 +259,7 @@ processlabel() {
 	sed 's|%|%%|g; s|\\|\\\\|g; s|@|\\@|g;'
 }
 
-#### 
+####
 
 main "$@"
 
@@ -271,7 +271,7 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 ######################################################################
 # NOTES:
 
-# Usage: lsix [ FILES ... ] 
+# Usage: lsix [ FILES ... ]
 
 # * FILES can be any image file that ImageMagick can handle.
 #
@@ -320,7 +320,7 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 # * Directories are not handled nicely.
 # * ImageMagick's Montage doesn't handle long filenames nicely.
 # * Some transparent images (many .eps files) presume a white background
-#   and will not show up if your terminal's background is black. 
+#   and will not show up if your terminal's background is black.
 # * This file is getting awfully long for a one line kludge. :-)
 
 # LICENSE INFORMATION
