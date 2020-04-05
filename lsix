@@ -230,19 +230,19 @@ main() {
     autodetect
 
     if [[ $# == 0 ]]; then
-	# No command line args? Use a sorted list of image files in CWD.
-	shopt -s nullglob nocaseglob nocasematch
-	set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
-	[[ $# != 0 ]] || exit
-	readarray -t < <(printf "%s\n" "$@" | sort)
+        # No command line args? Use a sorted list of image files in CWD.
+        shopt -s nullglob nocaseglob nocasematch
+        set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
+        [[ $# != 0 ]] || exit
+        readarray -t < <(printf "%s\n" "$@" | sort)
 
-	# Only show first frame of animated GIFs if filename not specified.
-	for x in ${!MAPFILE[@]}; do
-	    if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
-		MAPFILE[$x]=":${MAPFILE[$x]}[0]"
-	    fi
-	done
-	set - "${MAPFILE[@]}"
+        # Only show first frame of animated GIFs if filename not specified.
+        for x in ${!MAPFILE[@]}; do
+            if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
+                MAPFILE[$x]=":${MAPFILE[$x]}[0]"
+            fi
+        done
+        set - "${MAPFILE[@]}"
     else
         build_filelist
         set - "${FILE_LIST[@]}"
