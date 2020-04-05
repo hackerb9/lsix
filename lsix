@@ -274,6 +274,7 @@ main() {
 	done
 	montage "${onerow[@]}"  $imoptions gif:-  \
 	    | convert - -colors $numcolors sixel:-
+    echo
     done
 }
 
