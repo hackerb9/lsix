@@ -189,7 +189,7 @@ main() {
     if [[ $# == 0 ]]; then
 	# No command line args? Use a sorted list of image files in CWD.
 	shopt -s nullglob nocaseglob nocasematch
-	set - *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
+	set -- *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
 	[[ $# != 0 ]] || exit
 	readarray -t < <(printf "%s\n" "$@" | sort)
 
@@ -199,12 +199,24 @@ main() {
 		MAPFILE[$x]=":${MAPFILE[$x]}[0]"
 	    fi
 	done
-	set - "${MAPFILE[@]}"
+	set -- "${MAPFILE[@]}"
+    else
+	# Command line args specified. Check for directories.
+	lsix=$(realpath "$0")
+	for arg; do
+	    if [ -d "$arg" ]; then
+		echo Recursing on $arg
+		(cd "$arg"; $lsix)
+	    else
+		nodirs+=($arg)
+	    fi
+	done
+	set -- "${nodirs[@]}"
     fi
+
 
     # Resize on load: Save memory by appending this suffix to every filename.
     resize="[${tilewidth}x${tileheight}]"
-
 
     imoptions="-tile ${numtiles}x1" # Each montage is 1 row x $numtiles columns
     imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
@@ -317,7 +329,7 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 
 # BUGS
 
-# * Directories are not handled nicely.
+# * Sort order is a bit strange.
 # * ImageMagick's Montage doesn't handle long filenames nicely.
 # * Some transparent images (many .eps files) presume a white background
 #   and will not show up if your terminal's background is black.
