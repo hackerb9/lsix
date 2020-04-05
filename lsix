@@ -193,8 +193,8 @@ declare -a FILE_LIST
 filter_filename_and_specify_first_image() {
     local file="$1"
     local number_of_frames
-    number_of_frames="$(identify -quiet -format "%n" "$file" 2> /dev/null)"
-    [ "$?" -eq 1 ] && return # Skip file if not recognized
+    number_of_frames="$(identify -quiet -format "%n\n" "$file" 2> /dev/null | wc -l)"
+    [ "$?" -ne 0 ] && return # Skip file if not recognized
     if [ "$number_of_frames" -gt 1 ] ; then
         FILE_LIST+=( ":${file}[0]" )
     else
