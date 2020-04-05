@@ -54,7 +54,11 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
     fi
 fi
 
-if ! command -v montage >/dev/null; then
+IMAGEMAGICK_COMMANDS_MISSING=no
+for cmd in montage identify; do
+    command -v "$cmd" >/dev/null || IMAGEMAGICK_COMMANDS_MISSING=yes
+done
+if [ "$IMAGEMAGICK_COMMANDS_MISSING" == "yes" ] ; then
     echo "Please install ImageMagick" >&2
     exit 1
 fi
