@@ -189,7 +189,7 @@ main() {
     if [[ $# == 0 ]]; then
 	# No command line args? Use a sorted list of image files in CWD.
 	shopt -s nullglob nocaseglob nocasematch
-	set -- *{jpg,jpeg,png,gif,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
+	set -- *{jpg,jpeg,png,gif,webp,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
 	[[ $# != 0 ]] || exit
 	readarray -t < <(printf "%s\n" "$@" | sort)
 
