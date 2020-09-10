@@ -88,7 +88,7 @@ autodetect() {
     # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
     if [[ "$TERM" == yaft* ]]; then hassixel=yeah; fi
 
-    if [[ -z "$hassixel" ]]; then
+    if [[ -z "$hassixel" && -z "$LSIX_FORCE_SIXEL_SUPPORT" ]]; then
 	cat <<-EOF >&2
 	Error: Your terminal does not report having sixel graphics support.
 
@@ -105,7 +105,7 @@ autodetect() {
 	read -s -t 1 -d "c" -p $'\e[c' >&2
 	if [[ "$REPLY" ]]; then
 	    echo
-	    cat -v <<< "(Please mention device attribute codes: ${REPLY}c)"
+	    cat -v <<< "Please mention device attribute codes: ${REPLY}c"
 	fi
 
 	exit 1
