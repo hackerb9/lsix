@@ -180,7 +180,7 @@ GitHub.
 
 * If you run `lsix foo.avi`, you're asking for trouble.
 
-* Old versions of xterm need configuration to detect window size.
+* Obsolete versions of xterm need configuration to detect window size.
 
     If you are using Xterm(343) or below, to have `lsix` automatically
     adjust how many tiles it shows based on your window size, you'll need
@@ -195,7 +195,6 @@ GitHub.
     _not_ allow window ops, but then we explicitly list the ops
     disallowed, and it just happens that that list does not include the
     number 14. _(This_ _is_ _very_ _silly.)_
-
 
 
 ## Future Issues

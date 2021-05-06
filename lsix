@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.7.2
-# B9 September 2020
+# Version 1.7.4
+# B9 May 2021
 
 # See end of file for USAGE.
 
@@ -172,7 +172,7 @@ autodetect() {
     fi
 
     # BUG WORKAROUND: XTerm cannot show images wider than 1000px.
-    # Remove this hack once XTerm gets fixed. Last checked: XTerm(327)
+    # Remove this hack once XTerm gets fixed. Last checked: XTerm(344)
     if [[ $TERM =~ xterm && $width -ge 1000 ]]; then  width=1000; fi
 
     # Space on either side of each tile is less than 0.5% of total screen width
@@ -316,21 +316,12 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 #     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
 #     xterm*decTerminalID	:	vt340
 
-# * Xterm does not support reporting the screen size in pixels unless
-#   you add this to your .Xresources:
-#
-#     ! Allow xterm to read the terminal window size (op #14)
-#     xterm*allowWindowOps      : False
-#     xterm*disallowedWindowOps : 1,2,3,4,5,6,7,8,9,11,13,18,19,20,21,GetSelection,SetSelection,SetWinLines,SetXprop
-
 # * Be cautious using lsix on videos (lsix *.avi) as ImageMagick will
 #   try to make a montage of every single frame and likely exhaust
 #   your memory and/or your patience.
 
 # BUGS
 
-# * Sort order is a bit strange.
-# * ImageMagick's Montage doesn't handle long filenames nicely.
 # * Some transparent images (many .eps files) presume a white background
 #   and will not show up if your terminal's background is black.
 # * This file is getting awfully long for a one line kludge. :-)
