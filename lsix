@@ -208,7 +208,7 @@ main() {
 		echo Recursing on $arg
 		(cd "$arg"; $lsix)
 	    else
-		nodirs+=($arg)
+		nodirs+=("$arg")
 	    fi
 	done
 	set -- "${nodirs[@]}"
