@@ -157,16 +157,14 @@ GitHub.
   color will be incorrect for folks who use XTerm's reverseVideo
   resource. (See issue #20).
 
-* Screen width is currently limited to 1000px due to a misfeature in
-  xterm which caused it to silently show nothing. This limitation will
-  be removed once xterm can handle images greater than 1000x1000.
-
-* Directories specified on the command line should perhaps be
-  processed as if the user had cd'd to that directory.
+* XTerm's screen width is currently limited to 1000px due to a
+  misfeature which causes it to silently show nothing. This limitation
+  will be removed once xterm can handle images greater than 1000x1000.
+  [Last tested with XTerm(344)].
 
 * Filenames that begin with "@" are special to ImageMagick and it'll
   freak out if you don't prepend a directory. (`lsix ./@foo.png`)
-  (This is a bug in ImageMagick, not lsix.)
+  (This is a bug in ImageMagick, not lsix).
 
 * Specifying the empty string `""` as a filename makes ImageMagick hang.
   (This appears to be an ImageMagick bug / misfeature). 
@@ -174,6 +172,11 @@ GitHub.
 * Long filenames are wrapped, but not intelligently. Would it
   complicate this script too much to make it prefer to wrap on whites
   space, dashes, underscores, and periods? Maybe.
+
+* Directories specified on the command line are processed as if the
+  user had cd'd to that directory. It wouldn't be hard to implement
+  recursion, but is there actually a need? I'm reluctant to complicate
+  such a simple script with command line flags.
 
 * If you run `lsix foo.avi`, you're asking for trouble.
 
