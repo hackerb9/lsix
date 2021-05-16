@@ -90,6 +90,9 @@ The only prerequisite software is ImageMagick. If you don't have it
 yet, your OS's package manager will make it easy to get. (E.g.,
 `apt-get install imagemagick`).
 
+MacOS users may prefer to install lsix using `brew install lsix` which
+installs ImageMagick, if necessary.
+
 ## Your Terminal must support Sixel graphics
 
 I developed this using [xterm](https://invisible-island.net/xterm/) in
@@ -120,13 +123,14 @@ with sixel support. In that case, try an alternate terminal, such as
 
 * XTerm (tested)
 * MLterm (tested)
-* iterm2 for MacOS (pending)
-* WSLtty (reported)
-* MinTTY (Cygwin) (reported)
-* Yaft, Linux framebuffer terminal (tested)
+* iTerm2 for Apple MacOS (reported)
+* WSLtty for Microsoft Windows (reported)
+* MinTTY for Cygwin (Microsoft Windows) (reported)
+* Yaft for Linux framebuffer (tested)
 
 ### SIXEL incompatible terminals
 
+* MacOS Terminal, alacritty, kitty(?)
 * All libvte based terminals
   * gnome-terminal
   * terminator
