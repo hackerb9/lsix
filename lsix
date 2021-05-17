@@ -5,7 +5,7 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.7.4
+# Version 1.7.5
 # B9 May 2021
 
 # See end of file for USAGE.
@@ -196,7 +196,7 @@ main() {
 	# Only show first frame of animated GIFs if filename not specified.
 	for x in ${!MAPFILE[@]}; do
 	    if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
-		MAPFILE[$x]=":${MAPFILE[$x]}[0]"
+		MAPFILE[$x]="${MAPFILE[$x]}[0]"
 	    fi
 	done
 	set -- "${MAPFILE[@]}"
@@ -239,7 +239,7 @@ main() {
 	    len=${#onerow[@]}
 	    onerow[len++]="-label"
 	    onerow[len++]=$(processlabel "$1")
-	    onerow[len++]="$1"
+	    onerow[len++]="file://$1"
 	    shift
 	done
 	montage "${onerow[@]}"  $imoptions gif:-  \
