@@ -23,7 +23,7 @@ tilewidth=$tilesize    # (or specify separately, if you prefer)
 tileheight=$tilesize
 
 # If you get questionmarks for Unicode filenames, try using a different font.
-# You can list fonts available using `convert -list font`.
+# You can list fonts available using `magick convert -list font`.
 #fontfamily=Droid-Sans-Fallback		# Great Asian font coverage
 #fontfamily=Dejavu-Sans			# Wide coverage, comes with GNU/Linux
 #fontfamily=Mincho			# Wide coverage, comes with MS Windows
@@ -54,7 +54,7 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
     fi
 fi
 
-if ! command -v montage >/dev/null; then
+if ! command -v magick >/dev/null; then
     echo "Please install ImageMagick" >&2
     exit 1
 fi
@@ -97,7 +97,7 @@ autodetect() {
 
 	You may test your terminal by viewing a single image, like so:
 
-		convert  foo.jpg  -geometry 800x480  sixel:-
+		magick convert  foo.jpg  -geometry 800x480  sixel:-
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
@@ -242,8 +242,8 @@ main() {
 	    onerow[len++]="file://$1"
 	    shift
 	done
-	montage "${onerow[@]}"  $imoptions gif:-  \
-	    | convert - -colors $numcolors sixel:-
+	magick montage "${onerow[@]}"  $imoptions gif:-  \
+	    | magick convert - -colors $numcolors sixel:-
     done
 }
 
@@ -313,7 +313,7 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 
 # * To make vt340 be the default xterm type, set this in .Xresources:
 #
-#     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
+#     ! Allow sixel graphics. (Try: "magick convert -colors 16 foo.jpg sixel:-").
 #     xterm*decTerminalID	:	vt340
 
 # * Be cautious using lsix on videos (lsix *.avi) as ImageMagick will
