@@ -63,6 +63,18 @@ if command -v gsed >/dev/null; then
     alias sed=gsed		# Use GNU sed for MacOS & BSD
 fi
 
+if [[ "$COMSPEC" ]]; then
+	# This is most likely Microsoft Windows, which has set the COMSPEC variable since the MS-DOS days.
+	# Kludge to avoid using the builtin "convert" that has nothing to do with ImageMagick.
+	if command -v magick >/dev/null; then
+		# If using a new enough version of ImageMagick, all subcommands can be accessed from the magick wrapper command.
+		alias convert="magick convert"
+	else
+		# Make the alias target the 'convert' binary that is presumably located in the same directory as the known 'montage' binary.
+		# Any spaces that may be in the path need to be escaped if they aren't already.
+		alias convert="$(dirname "$(command -v montage)" | sed 's/ /\\ /g')/convert"
+fi
+
 cleanup() {
     echo -n $'\e\\'		# Escape sequence to stop SIXEL.
     stty echo			# Reset terminal to show characters.
