@@ -23,7 +23,7 @@ tilewidth=$tilesize    # (or specify separately, if you prefer)
 tileheight=$tilesize
 
 # If you get questionmarks for Unicode filenames, try using a different font.
-# You can list fonts available using `magick convert -list font`.
+# You can list fonts available using `convert -list font`.
 #fontfamily=Droid-Sans-Fallback		# Great Asian font coverage
 #fontfamily=Dejavu-Sans			# Wide coverage, comes with GNU/Linux
 #fontfamily=Mincho			# Wide coverage, comes with MS Windows
@@ -54,13 +54,25 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
     fi
 fi
 
-if ! command -v magick >/dev/null; then
+if ! command -v montage >/dev/null; then
     echo "Please install ImageMagick" >&2
     exit 1
 fi
 
 if command -v gsed >/dev/null; then
     alias sed=gsed		# Use GNU sed for MacOS & BSD
+fi
+
+if [[ "$COMSPEC" ]]; then
+	# This is most likely Microsoft Windows, which has set the COMSPEC variable since the MS-DOS days.
+	# Kludge to avoid using the builtin "convert" that has nothing to do with ImageMagick.
+	if command -v magick >/dev/null; then
+		# If using a new enough version of ImageMagick, all subcommands can be accessed from the magick wrapper command.
+		alias convert="magick convert"
+	else
+		# Make the alias target the 'convert' binary that is presumably located in the same directory as the known 'montage' binary.
+		# Any spaces that may be in the path need to be escaped if they aren't already.
+		alias convert="$(dirname "$(command -v montage)" | sed 's/ /\\ /g')/convert"
 fi
 
 cleanup() {
@@ -97,7 +109,7 @@ autodetect() {
 
 	You may test your terminal by viewing a single image, like so:
 
-		magick convert  foo.jpg  -geometry 800x480  sixel:-
+		convert  foo.jpg  -geometry 800x480  sixel:-
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
@@ -242,8 +254,8 @@ main() {
 	    onerow[len++]="file://$1"
 	    shift
 	done
-	magick montage "${onerow[@]}"  $imoptions gif:-  \
-	    | magick convert - -colors $numcolors sixel:-
+	montage "${onerow[@]}"  $imoptions gif:-  \
+	    | convert - -colors $numcolors sixel:-
     done
 }
 
@@ -313,7 +325,7 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 
 # * To make vt340 be the default xterm type, set this in .Xresources:
 #
-#     ! Allow sixel graphics. (Try: "magick convert -colors 16 foo.jpg sixel:-").
+#     ! Allow sixel graphics. (Try: "convert -colors 16 foo.jpg sixel:-").
 #     xterm*decTerminalID	:	vt340
 
 # * Be cautious using lsix on videos (lsix *.avi) as ImageMagick will
