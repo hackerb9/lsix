@@ -123,7 +123,7 @@ with sixel support. In that case, try an alternate terminal, such as
 
 * XTerm (tested)
 * MLterm (tested)
-* iTerm2 for Apple MacOS (reported)
+* iTerm2 for Apple MacOS (tested)
 * WSLtty for Microsoft Windows (reported)
 * MinTTY for Cygwin (Microsoft Windows) (reported)
 * Yaft for Linux framebuffer (tested)
