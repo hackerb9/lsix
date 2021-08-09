@@ -79,6 +79,7 @@ autodetect() {
     # IS TERMINAL SIXEL CAPABLE?		# Send Device Attributes
     IFS=";" read -a REPLY -s -t 1 -d "c" -p $'\e[c' >&2
     for code in "${REPLY[@]}"; do
+        echo $code >> code
 	if [[ $code == "4" ]]; then
 	    hassixel=yup
 	    break
@@ -87,6 +88,7 @@ autodetect() {
 
     # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
     if [[ "$TERM" == yaft* ]]; then hassixel=yeah; fi
+    if [[ "$(ps -o comm= -p "$(($(ps -o ppid= -p "$(($(ps -o sid= -p "$$")))")))")" == darktile ]]; then hassixel=yeah; fi
 
     if [[ -z "$hassixel" ]]; then
 	cat <<-EOF >&2
