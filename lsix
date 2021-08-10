@@ -79,7 +79,6 @@ autodetect() {
     # IS TERMINAL SIXEL CAPABLE?		# Send Device Attributes
     IFS=";" read -a REPLY -s -t 1 -d "c" -p $'\e[c' >&2
     for code in "${REPLY[@]}"; do
-        echo $code >> code
 	if [[ $code == "4" ]]; then
 	    hassixel=yup
 	    break
