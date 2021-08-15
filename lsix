@@ -112,7 +112,7 @@ autodetect() {
     fi
 
     # ENABLE SIXEL SCROLLING so image will appear right after cursor.
-    if [[ $TERM != "mlterm" ]]; then
+    if [[ $TERM != "mlterm" ]] && [[ $TERM != "foot" ]]; then
 	echo -ne $'\e[?80h'
     else
 	# Except... mlterm (as of 3.5.0) has a bug that reverses the sense
