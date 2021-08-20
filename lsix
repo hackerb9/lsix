@@ -59,6 +59,8 @@ if ! command -v montage >/dev/null; then
     exit 1
 fi
 
+shopt -s expand_aliases		# Allow aliases to work around quirks
+
 if command -v gsed >/dev/null; then
     alias sed=gsed		# Use GNU sed for MacOS & BSD
 fi
