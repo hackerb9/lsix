@@ -111,13 +111,8 @@ autodetect() {
 	exit 1
     fi
 
-    # ENABLE SIXEL SCROLLING so image will appear right after cursor.
-    if [[ $TERM != "mlterm" ]]; then
-	echo -ne $'\e[?80h'
-    else
-	# Except... mlterm (as of 3.5.0) has a bug that reverses the sense
-	echo -ne $'\e[?80l'
-    fi
+    # SIXEL SCROLLING (~DECSDM) is now presumed to be enabled.
+    # See https://github.com/hackerb9/lsix/issues/41 for details.
 
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
