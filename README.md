@@ -117,11 +117,12 @@ to your `.Xresources` file and run `xrdb -merge .Xresources`.
     
 Further, some distributions, such as Fedora, appear to not compile `xterm`
 with sixel support. In that case, try an alternate terminal, such as
-`mlterm`.
+`foot` or `mlterm`.
 
 ### SIXEL compatible terminals
 
 * XTerm (tested)
+* foot (tested)
 * MLterm (tested)
 * iTerm2 for Apple MacOS (tested)
 * WSLtty for Microsoft Windows (reported)
@@ -130,7 +131,7 @@ with sixel support. In that case, try an alternate terminal, such as
 
 ### SIXEL incompatible terminals
 
-* MacOS Terminal, alacritty, kitty(?)
+* MacOS Terminal, alacritty, kitty
 * All libvte based terminals
   * gnome-terminal
   * terminator
@@ -218,11 +219,11 @@ GitHub.
   WindowOps extension but it is not quite the right solution as the
   geometry of the Sixel graphics screen is not necessarily the same as
   the window size. (For example, xterm limits the graphics geometry to
-  1000x1000, even though the window can actually be larger.)
+  1000x1000, even though the window can actually be larger.) To help
+  with terminals such as mlterm, `lsix` will use the dtterm WindowOps
+  as a fallback.
 
-  For now, if your terminal can handle it, `lsix` will use the dtterm
-  WindowOps to read your window size, but the chances of that working
-  are slim. For most people `lsix` will assume you are on a VT340
+  If neither solution works, `lsix` will assume you are on a VT340
   (800x480) and can fit only 6 tiles per row.
 
 * The Sixel standard also lacks a way to query the number of
@@ -231,16 +232,6 @@ GitHub.
   does not respond, `lsix` presumes you're on an original vt340 and
   uses only 16 color registers. (Sorry, 4-gray vt330 users! Time to
   upgrade. ;-) )
-
-* mlterm (at least as of version 3.5.0) has a bug where it reverses
-  the sense of the sixel scrolling control sequence. 
-
-  Possibly this is an attempt to simulate the VT240 hardware terminal
-  which did not scroll sixels. However, that behavior is considered
-  "deviant" according to the standard. (See [DEC STD
-  070](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381), chapter 9, section 12.1, Deviations.)
-  Lsix works around it for now by detecting `TERM=mlterm`, but we should
-  watch out for the mlterm team to eventually fix it.
 
 * [libsixel](https://github.com/saitoha/libsixel) is an excellent
   project for writing programs that can output optimized Sixel
@@ -268,7 +259,19 @@ GitHub.
   * [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html)
   * [ImageMagick](https://imagemagick.org/)
   * [VT340 Programmer's Reference](https://vt100.net/docs/vt3xx-gp/):
-    * [Chapter 14](https://vt100.net/docs/vt3xx-gp/chapter14.html). Sixels.
+    * [Chapter 14](https://vt100.net/docs/vt3xx-gp/chapter14.html). Sixel Graphics.
     * [Chapter 16](https://vt100.net/docs/vt3xx-gp/chapter16.html#S16.3) Difference between Level 1 and Level 2 Sixel implementations.
+        
+        _Nota bene: this reference has the sense for DECSDM (sixel
+        display mode) reversed! The actual behaviour of the VT340 is
+        that when DECSDM is reset (the default), sixel scrolling is enabled.
+        This can be done by sending _`Esc[?80l`_, but lsix does not do
+        so as it would break many current terminal emulators.
+        See issue #41 for details._
+
   * [DEC STD 070 Video Systems Reference Manual](https://archive.org/details/bitsavers_decstandar0VideoSystemsReferenceManualDec91_74264381).
-    A weighty tome which covers everything in exacting detail. I referred mostly to sections 4 (escape sequences) and 9 (sixel programming).
+    A weighty tome which covers nearly everything in exacting detail. I referred mostly to sections 4 (escape sequences) and 9 (sixel programming).
+
+  * [VT340 Test](https://github.com/hackerb9/vt340test), a project to document the actual behaviour of the DEC VT340 hardware.
+
+  * [Digital ANSI-Compliant Printing Protocol: Level 2 Programming Reference Manual](http://www.vaxhaven.com/images/f/f7/EK-PPLV2-PM-B01.pdf), Chapter 5: Sixel Graphics. An excellent and reasonably clear discussion for anyone who wants to generate or parse sixel graphics.
