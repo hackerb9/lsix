@@ -185,22 +185,6 @@ GitHub.
 
 * If you run `lsix foo.avi`, you're asking for trouble.
 
-* Obsolete versions of xterm need configuration to detect window size.
-
-    If you are using Xterm(343) or below, to have `lsix` automatically
-    adjust how many tiles it shows based on your window size, you'll need
-    to add the following to your .Xresources:
-
-        ! Allow lsix to read the terminal window size (op #14)
-        xterm*allowWindowOps      : False
-        xterm*disallowedWindowOps : 1,2,3,4,5,6,7,8,9,11,13,18,19,20,21,GetSelection,SetSelection,SetWinLines,SetXprop
-
-    Xterm's configuration for this is rather recondite. In order to allow
-    the operation checking the window size (#14), we have to tell xterm to
-    _not_ allow window ops, but then we explicitly list the ops
-    disallowed, and it just happens that that list does not include the
-    number 14. _(This_ _is_ _very_ _silly.)_
-
 
 ## Future Issues
 
@@ -232,6 +216,30 @@ GitHub.
   does not respond, `lsix` presumes you're on an original vt340 and
   uses only 16 color registers. (Sorry, 4-gray vt330 users! Time to
   upgrade. ;-) )
+
+
+* The [Kermit project](https://kermitproject.org/) created a MS-DOS
+  terminal emulator that was popular in the late 1980s/early 1990s.
+  Its sixel implementation is not compatible with lsix because it
+  shows the graphics on a screen separate from the text. However, I
+  noticed one interesting feature in its documentation: an escape
+  sequence to request the current graphics window size and number of
+  colors. It works like this:
+
+```
+ ESC [ ? 256 n                  Request screen size report
+
+        Report is ESC [ ? 256; Ph; Pw; Pc n     for graphics systems
+
+        where   Ph is screen height in dots
+                Pw is screen width in dots
+                Pc is number of colors (0, 1 or 16, for none, b/w, ega/vga)
+
+        Report is ESC [ ? 24; 80; 0 n  for pure text mono systems.
+```
+
+  Did any other terminal emulators ever use the sequence? Would it be
+  worthwhile to add to `lsix`?
 
 * [libsixel](https://github.com/saitoha/libsixel) is an excellent
   project for writing programs that can output optimized Sixel
