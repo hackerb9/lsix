@@ -128,11 +128,12 @@ with sixel support. In that case, try an alternate terminal, such as
 * WSLtty for Microsoft Windows (reported)
 * MinTTY for Cygwin (Microsoft Windows) (reported)
 * Yaft for Linux framebuffer (tested)
+* VTE (special compilation, reported)
 
 ### SIXEL incompatible terminals
 
 * MacOS Terminal, alacritty, kitty
-* All libvte based terminals
+* All standard libvte based terminals
   * gnome-terminal
   * terminator
   * lxterm
@@ -195,9 +196,8 @@ GitHub.
 
   XTerm, as of version 344, has added [a control
   sequence](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Functions-using-CSI-_-ordered-by-the-final-character_s_)
-  that solves the problem — `CSI ? Pi ; Pa ; Pv S` — but not all OSes
-  have upgraded to XTerm(344) and some terminals, such as `mlterm`,
-  haven't yet implemented it.
+  that solves the problem — `CSI ? Pi ; Pa ; Pv S` — but some
+  terminals, for example `mlterm`, haven't yet implemented it.
 
   There is an alternate way to read the window size using the dtterm
   WindowOps extension but it is not quite the right solution as the
@@ -222,9 +222,8 @@ GitHub.
   terminal emulator that was popular in the late 1980s/early 1990s.
   Its sixel implementation is not compatible with lsix because it
   shows the graphics on a screen separate from the text. However, I
-  noticed one interesting feature in its documentation: an escape
-  sequence to request the current graphics window size and number of
-  colors. It works like this:
+  noticed one feature in its documentation: an escape sequence to
+  request the current graphics window size and number of colors:
 
 ```
  ESC [ ? 256 n                  Request screen size report
