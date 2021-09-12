@@ -125,8 +125,6 @@ autodetect() {
     IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
     [[ ${REPLY[1]} == "0" ]] && numcolors=${REPLY[2]}
 
-    # Bug workaround: mlterm does not report number of colors.
-    if [[ $TERM =~ mlterm ]]; then numcolors=1024; fi
     # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
     if [[ "$TERM" == yaft* ]]; then numcolors=256; fi
 
