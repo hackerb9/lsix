@@ -120,6 +120,19 @@ autodetect() {
     # SIXEL SCROLLING (~DECSDM) is now presumed to be enabled.
     # See https://github.com/hackerb9/lsix/issues/41 for details.
 
+    # SIXEL CURSOR PLACEMENT BUG WORKAROUND
+    case "$TERM" in
+	vt340*|contour*)
+	    # These terminals are correct. 
+	    sixelcursorbug=""	
+	    ;;
+	xterm*|mlterm|yaft*|*)
+	    # These terminals have not yet been fixed.
+	    sixelcursorbug="-n"	
+	    ;;
+    esac
+
+
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
     IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
@@ -243,6 +256,8 @@ main() {
 	done
 	montage "${onerow[@]}"  $imoptions gif:-  \
 	    | convert - -colors $numcolors sixel:-
+
+	echo $sixelcursorbug	# Go to next line, unless terminal is quirky.
     done
 }
 
