@@ -127,11 +127,10 @@ autodetect() {
 	    sixelcursorbug=""	
 	    ;;
 	xterm*|mlterm|yaft*|*)
-	    # These terminals have not yet been fixed.
+	    # These terminals have not yet been fixed. Use -n for echo.
 	    sixelcursorbug="-n"	
 	    ;;
     esac
-
 
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
@@ -254,10 +253,15 @@ main() {
 	    onerow[len++]="file://$1"
 	    shift
 	done
-	montage "${onerow[@]}"  $imoptions gif:-  \
-	    | convert - -colors $numcolors sixel:-
+	output=$(montage "${onerow[@]}"  $imoptions gif:-  \
+		     | convert - -colors $numcolors sixel:-)
 
-	echo $sixelcursorbug	# Go to next line, unless terminal is quirky.
+	# Workaround bug in ImageMagick that erroneously sends a
+	# graphics newline (-) before the end of the image (Esc backslash).
+	output=${output%-??}$'\e\\'
+
+	# Go to next line, unless terminal is quirky.
+	echo $sixelcursorbug "$output"
     done
 }
 
