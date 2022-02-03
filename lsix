@@ -83,7 +83,7 @@ autodetect() {
     stty -echo			# Hush-a Mandara Ni Pari
 
     # IS TERMINAL SIXEL CAPABLE?		# Send Device Attributes
-    IFS=";" read -a REPLY -s -t 1 -d "c" -p $'\e[c' >&2
+    IFS=";?c" read -a REPLY -s -t 1 -d "c" -p $'\e[c' >&2
     for code in "${REPLY[@]}"; do
 	if [[ $code == "4" ]]; then
 	    hassixel=yup
