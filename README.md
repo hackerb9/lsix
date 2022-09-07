@@ -129,6 +129,10 @@ with sixel support. In that case, try an alternate terminal, such as
 * MinTTY for Cygwin (Microsoft Windows) (reported)
 * Yaft for Linux framebuffer (tested)
 * VTE (special compilation, reported)
+* Konsole (tested)
+* Alacritty (build from this patch https://github.com/alacritty/alacritty/pull/4763 )
+* Wezterm
+* Contour
 
 ### SIXEL incompatible terminals
 
