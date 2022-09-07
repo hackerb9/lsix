@@ -122,9 +122,12 @@ with sixel support. In that case, try an alternate terminal, such as
 ### SIXEL compatible terminals
 
 * XTerm (tested)
-* foot (tested)
 * MLterm (tested)
+* foot (tested)
+* Wezterm (tested)
+* Contour (tested)
 * iTerm2 for Apple MacOS (tested)
+* Konsole (reported)
 * WSLtty for Microsoft Windows (reported)
 * MinTTY for Cygwin (Microsoft Windows) (reported)
 * Yaft for Linux framebuffer (tested)
@@ -132,11 +135,12 @@ with sixel support. In that case, try an alternate terminal, such as
 
 ### SIXEL incompatible terminals
 
-* MacOS Terminal, alacritty, kitty
+* MacOS Terminal, kitty
 * All standard libvte based terminals
   * gnome-terminal
   * terminator
   * lxterm
+* Alacritty (might work with [a patch](https://github.com/alacritty/alacritty/pull/4763))
 
 ## Configuration
 
