@@ -130,9 +130,11 @@ with sixel support. In that case, try an alternate terminal, such as
 * Yaft for Linux framebuffer (tested)
 * VTE (special compilation, reported)
 * Konsole (tested)
+* Yakuake (Depends on Sixel support in Konsole)
 * Alacritty (build from this patch https://github.com/alacritty/alacritty/pull/4763 )
 * Wezterm
 * Contour
+* sixel-tmux (fork of tmux)
 
 ### SIXEL incompatible terminals
 
