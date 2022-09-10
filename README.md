@@ -128,10 +128,12 @@ with sixel support. In that case, try an alternate terminal, such as
 * Contour (tested)
 * iTerm2 for Apple MacOS (tested)
 * Konsole (reported)
+* yakuake (reported)
 * WSLtty for Microsoft Windows (reported)
 * MinTTY for Cygwin (Microsoft Windows) (reported)
 * Yaft for Linux framebuffer (tested)
 * VTE (special compilation, reported)
+* sixel-tmux (fork of tmux, reported)
 
 ### SIXEL incompatible terminals
 
