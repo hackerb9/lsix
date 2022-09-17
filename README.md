@@ -134,6 +134,7 @@ with sixel support. In that case, try an alternate terminal, such as
 * Yaft for Linux framebuffer (tested)
 * VTE (special compilation, reported)
 * sixel-tmux (fork of tmux, reported)
+* ttyd (reported)
 
 ### SIXEL incompatible terminals
 
