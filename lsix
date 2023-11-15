@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.8
-# B9 August 2021
+# Version 1.8.1
+# B9 November 2023
 
 # See end of file for USAGE.
 
@@ -188,13 +188,13 @@ main() {
     if [[ $# == 0 ]]; then
 	# No command line args? Use a sorted list of image files in CWD.
 	shopt -s nullglob nocaseglob nocasematch
-	set -- *{jpg,jpeg,png,gif,webp,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
+	set -- *{jpg,jpeg,png,,webp,tiff,tif,p?m,x[pb]m,bmp,ico,svg,eps}
 	[[ $# != 0 ]] || exit
 	readarray -t < <(printf "%s\n" "$@" | sort)
 
 	# Only show first frame of animated GIFs if filename not specified.
 	for x in ${!MAPFILE[@]}; do
-	    if [[ ${MAPFILE[$x]} =~ gif$ ]]; then
+	    if [[ ${MAPFILE[$x]} =~ (gif|webp)$ ]]; then
 		MAPFILE[$x]="${MAPFILE[$x]}[0]"
 	    fi
 	done
