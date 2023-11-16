@@ -175,13 +175,6 @@ GitHub.
   will be removed once xterm can handle images greater than 1000x1000.
   [Last tested with XTerm(344)].
 
-* Filenames that begin with "@" are special to ImageMagick and it'll
-  freak out if you don't prepend a directory. (`lsix ./@foo.png`)
-  (This is a bug in ImageMagick, not lsix).
-
-* Specifying the empty string `""` as a filename makes ImageMagick hang.
-  (This appears to be an ImageMagick bug / misfeature). 
-
 * Long filenames are wrapped, but not intelligently. Would it
   complicate this script too much to make it prefer to wrap on whites
   space, dashes, underscores, and periods? Maybe.
