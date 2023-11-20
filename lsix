@@ -120,6 +120,18 @@ autodetect() {
     # SIXEL SCROLLING (~DECSDM) is now presumed to be enabled.
     # See https://github.com/hackerb9/lsix/issues/41 for details.
 
+    # SIXEL CURSOR PLACEMENT BUG WORKAROUND
+    case "$TERM" in
+	vt340*|contour*)
+	    # These terminals are correct. 
+	    sixelcursorbug=""	
+	    ;;
+	xterm*|mlterm|yaft*|*)
+	    # These terminals have not yet been fixed. Use -n for echo.
+	    sixelcursorbug="-n"	
+	    ;;
+    esac
+
     # TERMINAL COLOR AUTODETECTION.
     # Find out how many color registers the terminal has
     IFS=";"  read -a REPLY -s -t ${timeout} -d "S" -p $'\e[?1;1;0S' >&2
@@ -241,8 +253,15 @@ main() {
 	    onerow[len++]="file://$1"
 	    shift
 	done
-	montage "${onerow[@]}"  $imoptions gif:-  \
-	    | convert - -colors $numcolors sixel:-
+	output=$(montage "${onerow[@]}"  $imoptions gif:-  \
+		     | convert - -colors $numcolors sixel:-)
+
+	# Workaround bug in ImageMagick that erroneously sends a
+	# graphics newline (-) before the end of the image (Esc backslash).
+	output=${output%-??}$'\e\\'
+
+	# Go to next line, unless terminal is quirky.
+	echo $sixelcursorbug "$output"
     done
 }
 
