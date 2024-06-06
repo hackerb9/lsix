@@ -68,7 +68,12 @@ fi
 if [[ "$COMSPEC" ]]; then
     alias convert="magick convert" # Shun MS Windows' "convert" command.
 fi
-    
+
+# convert has been deprecated with ImageMagick 7
+if [ "$(identify -version | head -n 1 | awk '{print $3}' | cut -d'.' -f1)" -ge 7 ]; then
+    alias convert="magick"
+fi
+
 cleanup() {
     echo -n $'\e\\'		# Escape sequence to stop SIXEL.
     stty echo			# Reset terminal to show characters.
