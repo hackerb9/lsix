@@ -65,9 +65,7 @@ if command -v gsed >/dev/null; then
     alias sed=gsed		# Use GNU sed for MacOS & BSD.
 fi
 
-if [[ "$COMSPEC" ]]; then
-    alias convert="magick convert" # Shun MS Windows' "convert" command.
-fi
+alias convert="magick" # Shun MS Windows' "convert" command. Also fix some silly system aliases.
     
 cleanup() {
     echo -n $'\e\\'		# Escape sequence to stop SIXEL.
