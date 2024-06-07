@@ -230,7 +230,6 @@ main() {
     [[ "$fontsize" ]] &&     imoptions+=" -pointsize $fontsize "
 
     # Create and display montages one row at a time.
-    # Create and display montages one row at a time.
 		while [ $# -gt 0 ]; do
 				# While we still have images to process...
 				onerow=()
@@ -243,7 +242,6 @@ main() {
 						shift
 				done
 
-				# Note: The 'montage' command is not affected by this change, so it remains the same.
 				montage "${onerow[@]}" $imoptions gif:- \
 						| magick - -colors $numcolors sixel:-  # Convert to magick here.
 
