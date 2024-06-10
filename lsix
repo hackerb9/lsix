@@ -5,8 +5,8 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.8.2
-# B9 November 2023
+# Version 1.9
+# B9 June 2024
 
 # See end of file for USAGE.
 
@@ -54,7 +54,9 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
     fi
 fi
 
-if ! command -v montage >/dev/null; then
+magick=$(type -p magick)	# For ImageMagick 6 <-> 7 compatibility.
+
+if ! command -v $magick montage >/dev/null; then
     echo "Please install ImageMagick" >&2
     exit 1
 fi
@@ -103,7 +105,7 @@ autodetect() {
 
 	You may test your terminal by viewing a single image, like so:
 
-		convert  foo.jpg  -geometry 800x480  sixel:-
+		$magick convert  foo.jpg  -geometry 800x480  sixel:-
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
@@ -241,8 +243,8 @@ main() {
 	    onerow[len++]="file://$1"
 	    shift
 	done
-	montage "${onerow[@]}"  $imoptions gif:-  \
-	    | convert - -colors $numcolors sixel:-
+	$magick montage "${onerow[@]}"  $imoptions gif:-  \
+	    | $magick convert - -colors $numcolors sixel:-
     done
 }
 
