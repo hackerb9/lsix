@@ -54,7 +54,13 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
     fi
 fi
 
-magick=$(type -p magick)	# For ImageMagick 6 <-> 7 compatibility.
+# For ImageMagick 6 <-> 7 compatibility.
+magick=$(type -p magick)	
+if [[ ! $magick ]]; then
+	convert="convert"
+else 
+	convert="$magick"
+fi
 
 if ! command -v $magick montage >/dev/null; then
     echo "Please install ImageMagick" >&2
@@ -101,7 +107,7 @@ autodetect() {
 
 	You may test your terminal by viewing a single image, like so:
 
-		$magick convert  foo.jpg  -geometry 800x480  sixel:-
+		$convert foo.jpg  -geometry 800x480  sixel:-
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
@@ -240,7 +246,7 @@ main() {
 	    shift
 	done
 	$magick montage "${onerow[@]}"  $imoptions gif:-  \
-	    | $magick convert - -colors $numcolors sixel:-
+	    | $convert - -colors $numcolors sixel:-
     done
 }
 
