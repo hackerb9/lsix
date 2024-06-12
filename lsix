@@ -5,7 +5,7 @@
 
 # Requirements: just ImageMagick (and a Sixel terminal, of course)
 
-# Version 1.9
+# Version 1.9.1
 # B9 June 2024
 
 # See end of file for USAGE.
@@ -54,22 +54,20 @@ if [[ ${BASH_VERSINFO[0]} -eq 3 ]]; then
     fi
 fi
 
+shopt -s expand_aliases		# Allow aliases for working around quirks.
+
 # For ImageMagick 6 <-> 7 compatibility.
-magick=$(type -p magick)	
-if [[ ! $magick ]]; then
-	convert="convert"
-else 
-	convert="$magick"
+if type magick &>/dev/null; then
+    alias convert='magick'
+    alias montage='magick montage'
 fi
 
-if ! command -v $magick montage >/dev/null; then
+if ! command -v magick montage &>/dev/null; then 	# (implicit 'or')
     echo "Please install ImageMagick" >&2
     exit 1
 fi
 
-shopt -s expand_aliases		# Allow aliases for working around quirks.
-
-if command -v gsed >/dev/null; then
+if type gsed &>/dev/null; then
     alias sed=gsed		# Use GNU sed for MacOS & BSD.
 fi
 
@@ -107,7 +105,7 @@ autodetect() {
 
 	You may test your terminal by viewing a single image, like so:
 
-		$convert foo.jpg  -geometry 800x480  sixel:-
+		convert foo.jpg  -geometry 800x480  sixel:-
 
 	If your terminal actually does support sixel, please file a bug
 	report at http://github.com/hackerb9/lsix/issues
@@ -245,13 +243,13 @@ main() {
 	    onerow[len++]="file://$1"
 	    shift
 	done
-	$magick montage "${onerow[@]}"  $imoptions gif:-  \
-	    | $convert - -colors $numcolors sixel:-
+	montage "${onerow[@]}"  $imoptions gif:-  \
+	    | convert - -colors $numcolors sixel:-
     done
 }
 
 processlabel() {
-    # This routine is all about appeasing ImageMagick.
+    # This routine is mostly to appease ImageMagick.
     # 1. Remove silly [0] suffix and : prefix.
     # 2. Quote percent backslash, and at sign.
     # 3. Replace control characters with question marks.
@@ -308,7 +306,7 @@ read -s -t 60 -d "c" -p $'\e[c' >&2
 # * If your terminal supports changing the number of color registers
 #   to improve the picture quality, lsix will do so.
 
-# * Only software needed is ImageMagick (e.g., apt-get install imagemagick).
+# * Only software needed is ImageMagick (e.g., apt install imagemagick).
 
 # Your terminal must support SIXEL graphics. E.g.,
 #
