@@ -97,6 +97,7 @@ autodetect() {
 
     # YAFT is vt102 compatible, cannot respond to vt220 escape sequence.
     if [[ "$TERM" == yaft* ]]; then hassixel=yeah; fi
+    if [[ "$(ps -o comm= -p "$(($(ps -o ppid= -p "$(($(ps -o sid= -p "$$")))")))")" == darktile ]]; then hassixel=yeah; fi
 
     if [[ -z "$hassixel" && -z "$LSIX_FORCE_SIXEL_SUPPORT" ]]; then
 	cat <<-EOF >&2
