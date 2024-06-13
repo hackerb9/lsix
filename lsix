@@ -240,12 +240,17 @@ main() {
 	    len=${#onerow[@]}
 	    onerow[len++]="-label"
 	    onerow[len++]=$(processlabel "$1")
-	    onerow[len++]="file://$1"
+      onerow[len++]="file://$(imescape $1)"
 	    shift
 	done
-	montage "${onerow[@]}"  $imoptions gif:-  \
+
+  montage "${onerow[@]}"  $imoptions gif:-  \
 	    | convert - -colors $numcolors sixel:-
     done
+}
+
+imescape() {
+    echo "$@" | sed -e 's|^@|./@|g;'
 }
 
 processlabel() {
