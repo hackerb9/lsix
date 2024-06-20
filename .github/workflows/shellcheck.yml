@@ -1,0 +1,63 @@
+name: Shellcheck Lint
+
+on:
+  push:
+    paths:
+      # Run workflow on every push
+      # only if a file within the specified paths has been changed:
+      - 'lsix'
+
+  pull_request:
+    paths:
+      # Run workflow on every push
+      # only if a file within the specified paths has been changed:
+      - 'lsix'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Shellcheck Lint
+
+    # This job runs on Linux
+    runs-on: ubuntu-latest
+
+    steps:
+      # Required to access files of this repository
+      - uses: actions/checkout@v4
+
+      # Download Shellcheck and add it to the workflow path
+      - name: Download Shellcheck
+        run: |
+          wget -qO- "https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz" | tar -xJv
+          chmod +x shellcheck-stable/shellcheck
+      # Verify that Shellcheck can be executed
+      - name: Check Shellcheck Version
+        run: |
+          shellcheck-stable/shellcheck --version
+
+      # Run Shellcheck on repository
+      # ---
+      # https://github.com/koalaman/shellcheck
+      # ---
+      # Excluded checks:
+      # https://www.shellcheck.net/wiki/SC1091 -- Not following: /etc/rc.status was...
+      # https://www.shellcheck.net/wiki/SC1090 -- Can't follow non-constant source. ..
+      # ---
+      - name: Run Shellcheck
+        run: |
+          set +e
+          find  ./*/ -type f | while read -r sh; do
+            if [ "$(file --brief --mime-type "$sh")" == 'text/x-shellscript' ]; then
+              echo "shellcheck'ing $sh"
+              if ! shellcheck-stable/shellcheck --color=always --severity=warning --exclude=SC1091,SC1090 "$sh"; then
+                touch some_scripts_have_failed_shellcheck
+              fi
+            fi
+          done
+          if [ -f ./some_scripts_have_failed_shellcheck ]; then
+            echo "Shellcheck failed for one or more shellscript(s)"
+            exit 1
+          fi
+

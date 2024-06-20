@@ -195,6 +195,9 @@ main() {
 	readarray -t < <(printf "%s\n" "$@" | sort)
 
 	# Only show first frame of animated GIFs if filename not specified.
+  # INFO: Next two lines are only needed for shellcheck to avoid this error-messages that we can't fix right now:
+  # SC2068 (error): Double quote array expansions to avoid re-splitting elements.
+  # shellcheck disable=SC2068
 	for x in ${!MAPFILE[@]}; do
 	    if [[ ${MAPFILE[$x]} =~ (gif|webp)$ ]]; then
 		MAPFILE[$x]="${MAPFILE[$x]}[0]"
@@ -207,17 +210,13 @@ main() {
 	for arg; do
 	    if [ -d "$arg" ]; then
 		echo Recursing on $arg
-		(cd "$arg"; $lsix)
+		(cd "$arg" && $lsix)
 	    else
 		nodirs+=("$arg")
 	    fi
 	done
 	set -- "${nodirs[@]}"
     fi
-
-
-    # Resize on load: Save memory by appending this suffix to every filename.
-    resize="[${tilewidth}x${tileheight}]"
 
     imoptions="-tile ${numtiles}x1" # Each montage is 1 row x $numtiles columns
     imoptions+=" -geometry ${tilewidth}x${tileheight}>+${tilexspace}+${tileyspace}" # Size of each tile and spacing
@@ -236,7 +235,7 @@ main() {
 	# While we still have images to process...
 	onerow=()
 	goal=$(($# - numtiles)) # How many tiles left after this row
-	while [ $# -gt 0  -a  $# -gt $goal ]; do
+	while [[  $# -gt 0  &&  $# -gt $goal  ]]; do
 	    len=${#onerow[@]}
 	    onerow[len++]="-label"
 	    onerow[len++]=$(processlabel "$1")
